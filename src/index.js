@@ -28,4 +28,6 @@ const run = async ({ fileDiff } = {}) => {
 
 run();
 
+console.log('!!!!!!');
+
 module.exports = run;
