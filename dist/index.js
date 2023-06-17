@@ -24034,37 +24034,43 @@ class Bot {
       // userPrompt,
       OPENAI_API_KEY: OPENAI_API_KEY.length,
     })}`)
-    const result = await this.api.createChatCompletion({
-      model: 'gpt-3.5-turbo-0613',
-      messages: [
-        { role: 'system', content: systemPrompt},
-        { role: 'user', content: userPrompt }
-      ],
-      functions: [
-        {
-          "name": "comment_on_file",
-          "description": "Please comment on the line of code",
-          "parameters": {
-            "type": "object",
-            "properties": {
-              "file": {
-                "type": "string",
-                "description": "full path to filename"
-              },
-              "comments": {
-                "type": "string",
-                "description": "json containing objects with <line>, <comment>, <suggestion>"
-              },
-            }
-          },
-          required: ["file", "comments"]
-        }
-      ]
-    })
+    try {
+      const result = await this.api.createChatCompletion({
+        model: 'gpt-3.5-turbo-0613',
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user', content: userPrompt}
+        ],
+        functions: [
+          {
+            "name": "comment_on_file",
+            "description": "Please comment on the line of code",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "description": "full path to filename"
+                },
+                "comments": {
+                  "type": "string",
+                  "description": "json containing objects with <line>, <comment>, <suggestion>"
+                },
+              }
+            },
+            required: ["file", "comments"]
+          }
+        ]
+      })
 
-    info(`Got response from OpenAI: ${JSON.stringify(result)}`)
+      info(`Got response from OpenAI: ${JSON.stringify(result)}`)
 
-    return result.data.choices;
+      return result.data.choices;
+    } catch (e) {
+      error(`Failed to get OpenAI response: ${e.message}`)
+
+      return null;
+    }
   }
 }
 
