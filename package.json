@@ -1,0 +1,18 @@
+{
+  "name": "pr-review",
+  "version": "0.0.1",
+  "private": true,
+  "description": "OpenAI-based PR Reviewer and Summarizer.",
+  "main": "src/index.js",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1",
+    "@octokit/action": "^6.0.3",
+    "@octokit/plugin-retry": "^5.0.4",
+    "@octokit/plugin-throttling": "^6.1.0",
+    "openai": "^3.3.0"
+  },
+  "scripts": {
+    "start": "OPENAI_API_KEY=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 node test.js"
+  }
+}
