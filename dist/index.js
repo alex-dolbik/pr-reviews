@@ -24029,6 +24029,10 @@ class Bot {
   }
 
   async request({ systemPrompt, userPrompt }) {
+    info(`Requesting data from OpenAI: ${JSON.stringify({
+      systemPrompt,
+      userPrompt
+    })}`)
     const result = await this.api.createChatCompletion({
       model: 'gpt-3.5-turbo-0613',
       messages: [
@@ -24056,6 +24060,8 @@ class Bot {
         }
       ]
     })
+
+    info(`Got response from OpenAI: ${JSON.stringify(result)}`)
 
     return result.data.choices;
   }
