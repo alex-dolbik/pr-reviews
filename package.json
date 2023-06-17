@@ -13,6 +13,6 @@
     "openai": "^3.3.0"
   },
   "scripts": {
-    "start": "OPENAI_API_KEY=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 node test.js"
+    "start": "OPENAI_API_KEY=sk-85B4bHZ2zf0hC1ewBBN9T3BlbkFJ1d2OBRWDoZc99Mj1CgG node test.js"
   }
 }
