@@ -1,7 +1,5 @@
 const { info, getInput, error } = require('@actions/core');
 
-info(`Env VARS: ${JSON.stringify(process.env)}`)
-
 const { context: githubContext } = require('@actions/github');
 
 const Bot = require('./bots/bot');
