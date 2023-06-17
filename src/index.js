@@ -1,10 +1,10 @@
-const { info, getInput, error } = require('@actions/core');
+const { info } = require('@actions/core');
 
 const { context: githubContext } = require('@actions/github');
 
-// const Bot = require('./bots/bot');
-// const FileReview = require('./reviews/file-review');
-// const Commenter = require('./github/commenter');
+const Bot = require('./bots/bot');
+const FileReview = require('./reviews/file-review');
+const Commenter = require('./github/commenter');
 
 const run = async ({ fileDiff } = {}) => {
   // run file review
@@ -12,23 +12,25 @@ const run = async ({ fileDiff } = {}) => {
     `githubContext ${JSON.stringify(githubContext)}`
   )
 
-  // const repo = githubContext.repo
-  // const prNumber = githubContext.payload.pull_request.number
-  //
-  // const bot = new Bot();
-  // const fileReview = new FileReview({ bot });
-  // const reviews = await fileReview.review({ fileDiff })
-  // console.log('!!', reviews);
-  //
-  // const commenter = new Commenter({
-  //   repo,
-  //   prNumber,
-  //   commitId: '1',
-  // });
+  const repo = githubContext.payload.repository;
+  const ownerName = repo.owner.login;
+  const repoName = repo.name;
+  const prNumber = githubContext.payload.pull_request.number
+  const commitId = githubContext.payload.pull_request.merge_commit_sha
+
+  const bot = new Bot();
+  const fileReview = new FileReview({ bot });
+  const reviews = await fileReview.review({ fileDiff })
+  console.log('!!', reviews);
+
+  const commenter = new Commenter({
+    ownerName,
+    repoName,
+    prNumber,
+    commitId,
+  });
 }
 
 run();
-
-console.log('!!!!!!');
 
 module.exports = run;

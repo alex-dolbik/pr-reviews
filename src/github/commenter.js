@@ -3,8 +3,11 @@ const {info, warning} = require('@actions/core');
 const octokit = require("./octokit");
 
 class Commenter {
-  constructor({ repo, prNumber, commitId }) {
-    this.repo = repo;
+  constructor({ ownerName, repoName, prNumber, commitId }) {
+    this.repo = {
+      name: repoName,
+      owner: ownerName,
+    };
     this.prNumber = prNumber;
     this.commitId = commitId;
   }
@@ -25,7 +28,7 @@ class Commenter {
     )
     const commentData = {
       owner: this.repo.owner,
-      repo: this.repo.repo,
+      repo: this.repo.name,
       pull_number: this.prNumber,
       // eslint-disable-next-line camelcase
       commit_id: this.commitId,
