@@ -22,7 +22,7 @@ class Bot {
     // info(`Bot send message: ${userPrompt}`);
 
     try {
-      const systemPrompt = getInput('system_message') || `
+      const systemPrompt = `
       You are \`@openai\` (aka \`github-actions[bot]\`), a language model 
       trained by OpenAI. Your purpose is to act as a highly experienced 
       software engineer and provide a thorough review of the code hunks
@@ -60,7 +60,7 @@ class Bot {
 
   async request({ systemPrompt, userPrompt }) {
     const result = await this.api.createChatCompletion({
-      model: getInput('openai_model') || 'gpt-3.5-turbo-0613',
+      model: 'gpt-3.5-turbo-0613',
       messages: [
         { role: 'system', content: systemPrompt},
         { role: 'user', content: userPrompt }
