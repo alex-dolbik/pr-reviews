@@ -24188,14 +24188,10 @@ module.exports = octokit
 /***/ 4351:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { info } = __nccwpck_require__(2186);
-
+const { info, warning } = __nccwpck_require__(2186);
 const { context: githubContext } = __nccwpck_require__(5438);
 
-const Bot = __nccwpck_require__(5041);
-const FileReview = __nccwpck_require__(6855);
-const Commenter = __nccwpck_require__(1762);
-const octokit = __nccwpck_require__(1823);
+const review = __nccwpck_require__(5669);
 
 const run = async ({ fileDiff } = {}) => {
   // run file review
@@ -24203,38 +24199,13 @@ const run = async ({ fileDiff } = {}) => {
   //   `githubContext ${JSON.stringify(githubContext)}`
   // )
 
-  const repo = githubContext.payload.repository;
-  const ownerName = repo.owner.login;
-  const repoName = repo.name;
-  const prNumber = githubContext.payload.pull_request.number
-  const commitId = githubContext.payload.pull_request.merge_commit_sha
+  if (['pull_request', 'pull_request_target'].includes(githubContext.eventName)) {
+    return review(githubContext);
+  }
 
-  const { data: changedFiles } = await octokit.rest.pulls.listFiles({
-    owner: ownerName,
-    repo: repoName,
-    pull_number: prNumber,
-  });
-
-  const bot = new Bot();
-  const fileReview = new FileReview({ bot });
-
-  await Promise.all([changedFiles[1]].map(async (file) => {
-    const reviews = await fileReview.review({ fileDiff: {
-        fileName: file.filename,
-        diff: file.patch,
-    }})
-    console.log('!!', reviews);
-
-    const commenter = new Commenter({
-      ownerName,
-      repoName,
-      prNumber,
-      commitId,
-    });
-
-    await commenter.sendReviews(reviews);
-  }))
-
+  warning(
+    `Skipped: current event is ${context.eventName}, only support pull_request event`
+  )
 }
 
 run();
@@ -24300,6 +24271,59 @@ class FileReview {
 }
 
 module.exports = FileReview;
+
+/***/ }),
+
+/***/ 5669:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { warning, info } = __nccwpck_require__(2186);
+
+const octokit = __nccwpck_require__(1823);
+const Bot = __nccwpck_require__(5041);
+const FileReview = __nccwpck_require__(6855);
+const Commenter = __nccwpck_require__(1762);
+
+async function review(context) {
+  if (context.payload.pull_request == null) {
+    warning('Skipped: context.payload.pull_request is null')
+    return
+  }
+
+  const repo = context.payload.repository;
+  const ownerName = repo.owner.login;
+  const repoName = repo.name;
+  const prNumber = context.payload.pull_request.number
+  const commitId = context.payload.pull_request.merge_commit_sha
+
+  const { data: changedFiles } = await octokit.rest.pulls.listFiles({
+    owner: ownerName,
+    repo: repoName,
+    pull_number: prNumber,
+  });
+
+  const bot = new Bot();
+  const fileReview = new FileReview({ bot });
+
+  await Promise.all([changedFiles[1]].map(async (file) => {
+    const reviews = await fileReview.review({ fileDiff: {
+        fileName: file.filename,
+        diff: file.patch,
+      }})
+    console.log('!!', reviews);
+
+    const commenter = new Commenter({
+      ownerName,
+      repoName,
+      prNumber,
+      commitId,
+    });
+
+    await commenter.sendReviews(reviews);
+  }))
+}
+
+module.exports = review;
 
 /***/ }),
 
