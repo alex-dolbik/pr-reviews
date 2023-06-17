@@ -24030,8 +24030,9 @@ class Bot {
 
   async request({ systemPrompt, userPrompt }) {
     info(`Requesting data from OpenAI: ${JSON.stringify({
-      systemPrompt,
-      userPrompt
+      // systemPrompt,
+      // userPrompt,
+      OPENAI_API_KEY: OPENAI_API_KEY.length,
     })}`)
     const result = await this.api.createChatCompletion({
       model: 'gpt-3.5-turbo-0613',
