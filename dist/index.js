@@ -24186,9 +24186,9 @@ const octokit = __nccwpck_require__(1823);
 
 const run = async ({ fileDiff } = {}) => {
   // run file review
-  info(
-    `githubContext ${JSON.stringify(githubContext)}`
-  )
+  // info(
+  //   `githubContext ${JSON.stringify(githubContext)}`
+  // )
 
   const repo = githubContext.payload.repository;
   const ownerName = repo.owner.login;
@@ -24251,7 +24251,7 @@ module.exports = generateFileReviewPrompt;
 /***/ 6855:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { info } = __nccwpck_require__(2186);
+const { info, error } = __nccwpck_require__(2186);
 
 const generateFileReviewPrompt = __nccwpck_require__(7399);
 
@@ -24265,9 +24265,17 @@ class FileReview {
 
     info(`Request file review: ${fileReviewPrompt}`);
 
-    const [response] = await this.bot.sendMessage({ userPrompt: fileReviewPrompt })
-    info(`Got file review response: ${JSON.stringify(fileReviewPrompt)}`);
-    return this.parseResponse(response)
+    try {
+      const response = await this.bot.sendMessage({userPrompt: fileReviewPrompt})
+      info(`Got file review response: ${JSON.stringify(response)}`);
+      if (response.length) {
+        return this.parseResponse(response[0])
+      }
+      return [];
+    } catch (e) {
+      error(`Cannot get response from OpenAI: ${e.message}`);
+      return [];
+    }
   }
 
   parseResponse(response) {

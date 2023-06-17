@@ -1,4 +1,4 @@
-const { info } = require('@actions/core');
+const { info, error } = require('@actions/core');
 
 const generateFileReviewPrompt = require("../prompts/file-review-prompt");
 
@@ -12,9 +12,17 @@ class FileReview {
 
     info(`Request file review: ${fileReviewPrompt}`);
 
-    const [response] = await this.bot.sendMessage({ userPrompt: fileReviewPrompt })
-    info(`Got file review response: ${JSON.stringify(fileReviewPrompt)}`);
-    return this.parseResponse(response)
+    try {
+      const response = await this.bot.sendMessage({userPrompt: fileReviewPrompt})
+      info(`Got file review response: ${JSON.stringify(response)}`);
+      if (response.length) {
+        return this.parseResponse(response[0])
+      }
+      return [];
+    } catch (e) {
+      error(`Cannot get response from OpenAI: ${e.message}`);
+      return [];
+    }
   }
 
   parseResponse(response) {

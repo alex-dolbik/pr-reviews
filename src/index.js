@@ -9,9 +9,9 @@ const octokit = require('./github/octokit');
 
 const run = async ({ fileDiff } = {}) => {
   // run file review
-  info(
-    `githubContext ${JSON.stringify(githubContext)}`
-  )
+  // info(
+  //   `githubContext ${JSON.stringify(githubContext)}`
+  // )
 
   const repo = githubContext.payload.repository;
   const ownerName = repo.owner.login;
