@@ -8,7 +8,7 @@ const { context: githubContext } = require('@actions/github');
 
 const run = async ({ fileDiff } = {}) => {
   // run file review
-  console.log(
+  info(
     `githubContext ${JSON.stringify(githubContext)}`
   )
 
