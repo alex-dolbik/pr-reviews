@@ -5,8 +5,11 @@ const Bot = require('./bots/bot');
 const FileReview = require('./reviews/file-review');
 const Commenter = require('./github/commenter');
 
-const run = async ({ fileDiff }) => {
+const run = async ({ fileDiff } = {}) => {
   // run file review
+  info(
+    `githubContext ${JSON.stringify(githubContext)}`
+  )
 
   const repo = githubContext.repo
   const prNumber = githubContext.payload.pull_request.number
@@ -22,5 +25,7 @@ const run = async ({ fileDiff }) => {
     commitId: '1',
   });
 }
+
+run();
 
 module.exports = run;
