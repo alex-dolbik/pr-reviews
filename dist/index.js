@@ -24182,6 +24182,7 @@ const { context: githubContext } = __nccwpck_require__(5438);
 const Bot = __nccwpck_require__(5041);
 const FileReview = __nccwpck_require__(6855);
 const Commenter = __nccwpck_require__(1762);
+const octokit = __nccwpck_require__(1823);
 
 const run = async ({ fileDiff } = {}) => {
   // run file review
@@ -24195,17 +24196,33 @@ const run = async ({ fileDiff } = {}) => {
   const prNumber = githubContext.payload.pull_request.number
   const commitId = githubContext.payload.pull_request.merge_commit_sha
 
+  const { data: changedFiles } = await octokit.rest.pulls.listFiles({
+    owner: ownerName,
+    repo: repoName,
+    pull_number: prNumber,
+  });
+
+console.log(JSON.stringify(changedFiles));
   const bot = new Bot();
   const fileReview = new FileReview({ bot });
-  const reviews = await fileReview.review({ fileDiff })
-  console.log('!!', reviews);
 
-  const commenter = new Commenter({
-    ownerName,
-    repoName,
-    prNumber,
-    commitId,
-  });
+  // await Promise.all(changedFiles.map(async (file) => {
+  //   const reviews = await fileReview.review({ fileDiff: {
+  //       fileName: file.filename,
+  //       diff:
+  //   }})
+  //   console.log('!!', reviews);
+  //
+  //   const commenter = new Commenter({
+  //     ownerName,
+  //     repoName,
+  //     prNumber,
+  //     commitId,
+  //   });
+  //
+  //
+  // }))
+
 }
 
 run();
