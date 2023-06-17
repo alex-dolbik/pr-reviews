@@ -13,10 +13,12 @@
     "openai": "^3.3.0"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "ncc build -o dist src/index.js",
+    "build2": "webpack",
     "start": "OPENAI_API_KEY=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 node test.js"
   },
   "devDependencies": {
+    "@vercel/ncc": "^0.36.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "webpack": "^5.87.0",
     "webpack-cli": "^5.1.4"
