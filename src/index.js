@@ -1,11 +1,7 @@
-const { info } = require('@actions/core');
-
+const { info, warning } = require('@actions/core');
 const { context: githubContext } = require('@actions/github');
 
-const Bot = require('./bots/bot');
-const FileReview = require('./reviews/file-review');
-const Commenter = require('./github/commenter');
-const octokit = require('./github/octokit');
+const review = require('./reviews');
 
 const run = async ({ fileDiff } = {}) => {
   // run file review
@@ -13,38 +9,13 @@ const run = async ({ fileDiff } = {}) => {
   //   `githubContext ${JSON.stringify(githubContext)}`
   // )
 
-  const repo = githubContext.payload.repository;
-  const ownerName = repo.owner.login;
-  const repoName = repo.name;
-  const prNumber = githubContext.payload.pull_request.number
-  const commitId = githubContext.payload.pull_request.merge_commit_sha
+  if (['pull_request', 'pull_request_target'].includes(githubContext.eventName)) {
+    return review(githubContext);
+  }
 
-  const { data: changedFiles } = await octokit.rest.pulls.listFiles({
-    owner: ownerName,
-    repo: repoName,
-    pull_number: prNumber,
-  });
-
-  const bot = new Bot();
-  const fileReview = new FileReview({ bot });
-
-  await Promise.all([changedFiles[1]].map(async (file) => {
-    const reviews = await fileReview.review({ fileDiff: {
-        fileName: file.filename,
-        diff: file.patch,
-    }})
-    console.log('!!', reviews);
-
-    const commenter = new Commenter({
-      ownerName,
-      repoName,
-      prNumber,
-      commitId,
-    });
-
-    await commenter.sendReviews(reviews);
-  }))
-
+  warning(
+    `Skipped: current event is ${context.eventName}, only support pull_request event`
+  )
 }
 
 run();
