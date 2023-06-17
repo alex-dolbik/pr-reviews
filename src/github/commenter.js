@@ -12,7 +12,7 @@ class Commenter {
     this.commitId = commitId;
   }
 
-  async sendReview(reviews) {
+  async sendReviews(reviews) {
     return await Promise.all(reviews.map(review => {
       return this.sendReviewComment({
         path: review.file,

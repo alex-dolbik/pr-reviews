@@ -25,26 +25,25 @@ const run = async ({ fileDiff } = {}) => {
     pull_number: prNumber,
   });
 
-console.log(JSON.stringify(changedFiles));
   const bot = new Bot();
   const fileReview = new FileReview({ bot });
 
-  // await Promise.all(changedFiles.map(async (file) => {
-  //   const reviews = await fileReview.review({ fileDiff: {
-  //       fileName: file.filename,
-  //       diff:
-  //   }})
-  //   console.log('!!', reviews);
-  //
-  //   const commenter = new Commenter({
-  //     ownerName,
-  //     repoName,
-  //     prNumber,
-  //     commitId,
-  //   });
-  //
-  //
-  // }))
+  await Promise.all([changedFiles[1]].map(async (file) => {
+    const reviews = await fileReview.review({ fileDiff: {
+        fileName: file.filename,
+        diff: file.patch,
+    }})
+    console.log('!!', reviews);
+
+    const commenter = new Commenter({
+      ownerName,
+      repoName,
+      prNumber,
+      commitId,
+    });
+
+    await commenter.sendReviews(reviews);
+  }))
 
 }
 
