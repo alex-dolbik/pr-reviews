@@ -24251,6 +24251,8 @@ module.exports = generateFileReviewPrompt;
 /***/ 6855:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+const { info } = __nccwpck_require__(2186);
+
 const generateFileReviewPrompt = __nccwpck_require__(7399);
 
 class FileReview {
@@ -24261,7 +24263,10 @@ class FileReview {
   async review({ fileDiff }) {
     const fileReviewPrompt = generateFileReviewPrompt(fileDiff)
 
+    info(`Request file review: ${fileReviewPrompt}`);
+
     const [response] = await this.bot.sendMessage({ userPrompt: fileReviewPrompt })
+    info(`Got file review response: ${JSON.stringify(fileReviewPrompt)}`);
     return this.parseResponse(response)
   }
 

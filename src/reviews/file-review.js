@@ -1,3 +1,5 @@
+const { info } = require('@actions/core');
+
 const generateFileReviewPrompt = require("../prompts/file-review-prompt");
 
 class FileReview {
@@ -8,7 +10,10 @@ class FileReview {
   async review({ fileDiff }) {
     const fileReviewPrompt = generateFileReviewPrompt(fileDiff)
 
+    info(`Request file review: ${fileReviewPrompt}`);
+
     const [response] = await this.bot.sendMessage({ userPrompt: fileReviewPrompt })
+    info(`Got file review response: ${JSON.stringify(fileReviewPrompt)}`);
     return this.parseResponse(response)
   }
 
