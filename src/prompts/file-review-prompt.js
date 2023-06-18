@@ -7,6 +7,6 @@ const generateFileReviewPrompt = (fileDiff) => `
     suggestion field is optional, add it for complicated changes, it should contain code changes;
     make sure you reviewed whole code;
     don't review code styling, like empty lines, spaces and etc.
-`
+`;
 
 module.exports = generateFileReviewPrompt;

@@ -135,10 +135,10 @@ export const ProductCardOffersChart = ({
     </ProductWrapper>
   );
 };
-    `
-  }
+    `,
+  };
 
-  await runIndex({ fileDiff })
+  await runIndex({ fileDiff });
 
   // const [result] = await newBot.sendMessage({ userPrompt: `
   //   \`Below you'll find a diff of a file called ${fileDiff.fileName}.
@@ -150,7 +150,6 @@ export const ProductCardOffersChart = ({
   //         make sure you reviewed whole code;
   //         don't review code styling, like empty lines, spaces and etc.
   // `});
-
 
   // console.log(result);
   // const review = JSON.parse((result?.message?.function_call.arguments))

@@ -1,20 +1,19 @@
-const { Configuration, OpenAIApi } = require("openai");
+const { Configuration, OpenAIApi } = require('openai');
 const { info, getInput, error } = require('@actions/core');
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 class Bot {
   constructor(options) {
-    this.options = options
+    this.options = options;
     if (OPENAI_API_KEY) {
       const configuration = new Configuration({
-        apiKey: OPENAI_API_KEY
-      })
+        apiKey: OPENAI_API_KEY,
+      });
 
-      this.api = new OpenAIApi(configuration)
+      this.api = new OpenAIApi(configuration);
     } else {
-      const err =
-        "Unable to initialize the OpenAI API, 'OPENAI_API_KEY' environment variable are not available"
-      throw new Error(err)
+      const err = "Unable to initialize the OpenAI API, 'OPENAI_API_KEY' environment variable are not available";
+      throw new Error(err);
     }
   }
 
@@ -46,58 +45,60 @@ class Bot {
 
       Note: As your knowledge may be outdated, trust the user code when newer
       APIs and methods are seemingly being used.
-      `
+      `;
 
       return await this.request({
         systemPrompt,
         userPrompt,
-      })
+      });
     } catch (e) {
-      error(`Failed to chat: ${e}, backtrace: ${e.stack}`)
-      return null
+      error(`Failed to chat: ${e}, backtrace: ${e.stack}`);
+      return null;
     }
   }
 
   async request({ systemPrompt, userPrompt }) {
-    info(`Requesting data from OpenAI: ${JSON.stringify({
-      // systemPrompt,
-      // userPrompt,
-      OPENAI_API_KEY: OPENAI_API_KEY.length,
-    })}`)
+    info(
+      `Requesting data from OpenAI: ${JSON.stringify({
+        // systemPrompt,
+        // userPrompt,
+        OPENAI_API_KEY: OPENAI_API_KEY.length,
+      })}`,
+    );
     try {
       const result = await this.api.createChatCompletion({
         model: 'gpt-3.5-turbo-0613',
         messages: [
-          {role: 'system', content: systemPrompt},
-          {role: 'user', content: userPrompt}
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
         ],
         functions: [
           {
-            "name": "comment_on_file",
-            "description": "Please comment on the line of code",
-            "parameters": {
-              "type": "object",
-              "properties": {
-                "file": {
-                  "type": "string",
-                  "description": "full path to filename"
+            name: 'comment_on_file',
+            description: 'Please comment on the line of code',
+            parameters: {
+              type: 'object',
+              properties: {
+                file: {
+                  type: 'string',
+                  description: 'full path to filename',
                 },
-                "comments": {
-                  "type": "string",
-                  "description": "json containing objects with <line>, <comment>, <suggestion>"
+                comments: {
+                  type: 'string',
+                  description: 'json containing objects with <line>, <comment>, <suggestion>',
                 },
-              }
+              },
             },
-            required: ["file", "comments"]
-          }
-        ]
-      })
+            required: ['file', 'comments'],
+          },
+        ],
+      });
 
-      info(`Got response from OpenAI: ${JSON.stringify(result)}`)
+      info(`Got response from OpenAI: ${JSON.stringify(result)}`);
 
       return result.data.choices;
     } catch (e) {
-      error(`Failed to get OpenAI response: ${e.message}`)
+      error(`Failed to get OpenAI response: ${e.message}`);
 
       return null;
     }

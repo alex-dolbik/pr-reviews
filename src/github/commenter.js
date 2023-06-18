@@ -1,6 +1,6 @@
-const {info, warning} = require('@actions/core');
+const { info, warning } = require('@actions/core');
 
-const octokit = require("./octokit");
+const octokit = require('./octokit');
 
 class Commenter {
   constructor({ ownerName, repoName, prNumber, commitId }) {
@@ -13,19 +13,19 @@ class Commenter {
   }
 
   async sendReviews(reviews) {
-    return await Promise.all(reviews.map(review => {
-      return this.sendReviewComment({
-        path: review.file,
-        startLine: review.comment.line,
-        message: review.comment.comment,
-      })
-    }))
+    return await Promise.all(
+      reviews.map((review) => {
+        return this.sendReviewComment({
+          path: review.file,
+          startLine: review.comment.line,
+          message: review.comment.comment,
+        });
+      }),
+    );
   }
 
   async sendReviewComment({ comment }) {
-    info(
-      `Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message}`
-    )
+    info(`Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message}`);
     const commentData = {
       owner: this.repo.owner,
       repo: this.repo.name,
@@ -34,19 +34,19 @@ class Commenter {
       commit_id: this.commitId,
       body: comment.message,
       path: comment.path,
-      line: comment.endLine
-    }
+      line: comment.endLine,
+    };
 
     if (comment.endLine && comment.startLine !== comment.endLine) {
       // eslint-disable-next-line camelcase
-      commentData.start_side = 'RIGHT'
+      commentData.start_side = 'RIGHT';
       // eslint-disable-next-line camelcase
-      commentData.start_line = comment.startLine
+      commentData.start_line = comment.startLine;
     }
     try {
-      await octokit.pulls.createReviewComment(commentData)
+      await octokit.pulls.createReviewComment(commentData);
     } catch (e) {
-      warning(`Failed to create review comment: ${e}`)
+      warning(`Failed to create review comment: ${e}`);
     }
   }
 }

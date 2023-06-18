@@ -1,5 +1,5 @@
 const path = require('path');
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = {
   target: 'node',
@@ -8,7 +8,5 @@ module.exports = {
     filename: 'bundle.js', // Output filename
     path: path.resolve(__dirname, 'dist'), // Output directory
   },
-  plugins: [
-    new NodePolyfillPlugin()
-  ]
+  plugins: [new NodePolyfillPlugin()],
 };
