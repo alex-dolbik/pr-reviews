@@ -24,7 +24,7 @@ class Commenter {
     );
   }
 
-  async sendReviewComment({ comment }) {
+  async sendReviewComment(comment) {
     info(`Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message}`);
     const commentData = {
       owner: this.repo.owner,
