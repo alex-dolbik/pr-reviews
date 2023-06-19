@@ -66,10 +66,6 @@ class Bot {
       })}`,
     );
 
-    function comment_on_file(a, b) {
-      console.log(a, b);
-    }
-
     try {
       const result = await this.api.createChatCompletion({
         model: 'gpt-3.5-turbo-0613',

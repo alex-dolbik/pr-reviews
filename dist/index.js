@@ -24036,10 +24036,6 @@ class Bot {
       })}`,
     );
 
-    function comment_on_file(a, b) {
-      console.log(a, b);
-    }
-
     try {
       const result = await this.api.createChatCompletion({
         model: 'gpt-3.5-turbo-0613',
@@ -24252,6 +24248,7 @@ class FileReview {
 
     try {
       const response = await this.bot.sendMessage({ userPrompt: fileReviewPrompt });
+      console.log(response[0].message?.function_call.arguments);
       info(`Got file review response: ${JSON.stringify(response)}`);
       if (response?.length) {
         return this.parseResponse(response[0]);

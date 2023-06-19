@@ -14,6 +14,7 @@ class FileReview {
 
     try {
       const response = await this.bot.sendMessage({ userPrompt: fileReviewPrompt });
+      console.log(response[0].message?.function_call.arguments);
       info(`Got file review response: ${JSON.stringify(response)}`);
       if (response?.length) {
         return this.parseResponse(response[0]);
