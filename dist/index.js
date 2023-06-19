@@ -24035,6 +24035,11 @@ class Bot {
         OPENAI_API_KEY: OPENAI_API_KEY.length,
       })}`,
     );
+
+    function comment_on_file(a, b) {
+      console.log(a, b);
+    }
+
     try {
       const result = await this.api.createChatCompletion({
         model: 'gpt-3.5-turbo-0613',
@@ -24251,10 +24256,10 @@ class FileReview {
       if (response?.length) {
         return this.parseResponse(response[0]);
       }
-      return [];
+      return null;
     } catch (e) {
       error(`Cannot get response from OpenAI: ${e.message}`);
-      return [];
+      return null;
     }
   }
 
@@ -24274,7 +24279,7 @@ module.exports = FileReview;
 /***/ 5669:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { warning, info } = __nccwpck_require__(2186);
+const { warning, info, error } = __nccwpck_require__(2186);
 
 const octokit = __nccwpck_require__(1823);
 const Bot = __nccwpck_require__(5041);
@@ -24311,6 +24316,10 @@ async function review(context) {
         },
       });
       console.log('!!', review);
+      if (!review) {
+        error(`Cannot get file review`);
+        return;
+      }
 
       const commenter = new Commenter({
         ownerName,

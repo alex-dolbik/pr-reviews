@@ -65,6 +65,11 @@ class Bot {
         OPENAI_API_KEY: OPENAI_API_KEY.length,
       })}`,
     );
+
+    function comment_on_file(a, b) {
+      console.log(a, b);
+    }
+
     try {
       const result = await this.api.createChatCompletion({
         model: 'gpt-3.5-turbo-0613',

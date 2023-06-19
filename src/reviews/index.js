@@ -1,4 +1,4 @@
-const { warning, info } = require('@actions/core');
+const { warning, info, error } = require('@actions/core');
 
 const octokit = require('../github/octokit');
 const Bot = require('../bots/bot');
@@ -35,6 +35,10 @@ async function review(context) {
         },
       });
       console.log('!!', review);
+      if (!review) {
+        error(`Cannot get file review`);
+        return;
+      }
 
       const commenter = new Commenter({
         ownerName,

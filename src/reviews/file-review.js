@@ -18,10 +18,10 @@ class FileReview {
       if (response?.length) {
         return this.parseResponse(response[0]);
       }
-      return [];
+      return null;
     } catch (e) {
       error(`Cannot get response from OpenAI: ${e.message}`);
-      return [];
+      return null;
     }
   }
 
