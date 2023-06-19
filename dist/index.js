@@ -24104,6 +24104,7 @@ class Commenter {
         return this.sendReviewComment({
           path: file,
           startLine: line,
+          endLine: line,
           message: comment,
         });
       }),
