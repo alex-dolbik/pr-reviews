@@ -95,7 +95,6 @@ class Bot {
       });
 
       console.log(result.data.choices);
-      info(`Got response from OpenAI: ${result.data}`);
 
       return result.data.choices;
     } catch (e) {

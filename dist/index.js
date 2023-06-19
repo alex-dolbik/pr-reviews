@@ -24065,7 +24065,6 @@ class Bot {
       });
 
       console.log(result.data.choices);
-      info(`Got response from OpenAI: ${result.data}`);
 
       return result.data.choices;
     } catch (e) {
@@ -24098,13 +24097,13 @@ class Commenter {
     this.commitId = commitId;
   }
 
-  async sendReviews(reviews) {
+  async sendReviews({ file, comments }) {
     return await Promise.all(
-      reviews.map((review) => {
+      comments.map(({ line, comment }) => {
         return this.sendReviewComment({
-          path: review.file,
-          startLine: review.comment.line,
-          message: review.comment.comment,
+          path: file,
+          startLine: line,
+          message: comment,
         });
       }),
     );
@@ -24305,7 +24304,7 @@ async function review(context) {
 
   await Promise.all(
     [changedFiles[1]].map(async (file) => {
-      const reviews = await fileReview.review({
+      const review = await fileReview.review({
         fileDiff: {
           fileName: file.filename,
           diff: file.patch,
@@ -24320,7 +24319,7 @@ async function review(context) {
         commitId,
       });
 
-      await commenter.sendReviews(reviews);
+      await commenter.sendReviews(review);
     }),
   );
 }

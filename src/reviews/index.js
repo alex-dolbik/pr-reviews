@@ -28,7 +28,7 @@ async function review(context) {
 
   await Promise.all(
     [changedFiles[1]].map(async (file) => {
-      const reviews = await fileReview.review({
+      const review = await fileReview.review({
         fileDiff: {
           fileName: file.filename,
           diff: file.patch,
@@ -43,7 +43,7 @@ async function review(context) {
         commitId,
       });
 
-      await commenter.sendReviews(reviews);
+      await commenter.sendReviews(review);
     }),
   );
 }
