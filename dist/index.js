@@ -24064,9 +24064,8 @@ class Bot {
         ],
       });
 
-      console.log(result);
-      info(`Got response from OpenAI 1: ${result}`);
-      info(`Got response from OpenAI: ${JSON.stringify(result)}`);
+      console.log(result.data.choices);
+      info(`Got response from OpenAI: ${result.data}`);
 
       return result.data.choices;
     } catch (e) {
