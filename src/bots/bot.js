@@ -94,6 +94,8 @@ class Bot {
         ],
       });
 
+      console.log(result);
+      info(`Got response from OpenAI 1: ${result}`);
       info(`Got response from OpenAI: ${JSON.stringify(result)}`);
 
       return result.data.choices;
