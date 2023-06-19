@@ -34,7 +34,7 @@ async function review(context) {
           diff: file.patch,
         },
       });
-      console.log('!!', reviews);
+      console.log('!!', review);
 
       const commenter = new Commenter({
         ownerName,
