@@ -24298,8 +24298,7 @@ async function review(context) {
   const ownerName = repo.owner.login;
   const repoName = repo.name;
   const prNumber = context.payload.pull_request.number;
-  const commitId = context.payload.pull_request.merge_commit_sha;
-  console.log(context.payload.pull_request);
+  const commitId = context.payload.pull_request.head.sha;
 
   const { data: changedFiles } = await octokit.rest.pulls.listFiles({
     owner: ownerName,
