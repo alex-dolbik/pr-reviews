@@ -1,4 +1,4 @@
-const { info, warning } = require('@actions/core');
+const { info, warning, error } = require('@actions/core');
 
 const octokit = require('./octokit');
 
@@ -26,7 +26,9 @@ class Commenter {
   }
 
   async sendReviewComment(comment) {
-    info(`Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message}`);
+    info(
+      `Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message} in ${this.repo.owner}/${this.repo.name}`,
+    );
     const commentData = {
       owner: this.repo.owner,
       repo: this.repo.name,
@@ -36,6 +38,7 @@ class Commenter {
       body: comment.message,
       path: comment.path,
       line: comment.endLine,
+      position: 1,
     };
 
     if (comment.endLine && comment.startLine !== comment.endLine) {
@@ -47,7 +50,7 @@ class Commenter {
     try {
       await octokit.pulls.createReviewComment(commentData);
     } catch (e) {
-      warning(`Failed to create review comment: ${e}`);
+      error(`Failed to create review comment: ${e}. ${JSON.stringify(commentData)}`);
     }
   }
 }

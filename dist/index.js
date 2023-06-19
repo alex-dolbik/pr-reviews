@@ -24084,7 +24084,7 @@ module.exports = Bot;
 /***/ 1762:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { info, warning } = __nccwpck_require__(2186);
+const { info, warning, error } = __nccwpck_require__(2186);
 
 const octokit = __nccwpck_require__(1823);
 
@@ -24112,7 +24112,9 @@ class Commenter {
   }
 
   async sendReviewComment(comment) {
-    info(`Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message}`);
+    info(
+      `Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message} in ${this.repo.owner}/${this.repo.name}`,
+    );
     const commentData = {
       owner: this.repo.owner,
       repo: this.repo.name,
@@ -24122,6 +24124,7 @@ class Commenter {
       body: comment.message,
       path: comment.path,
       line: comment.endLine,
+      position: 1,
     };
 
     if (comment.endLine && comment.startLine !== comment.endLine) {
@@ -24133,7 +24136,7 @@ class Commenter {
     try {
       await octokit.pulls.createReviewComment(commentData);
     } catch (e) {
-      warning(`Failed to create review comment: ${e}`);
+      error(`Failed to create review comment: ${e}. ${JSON.stringify(commentData)}`);
     }
   }
 }
