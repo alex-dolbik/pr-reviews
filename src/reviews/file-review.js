@@ -14,7 +14,7 @@ class FileReview {
 
     try {
       const response = await this.bot.sendMessage({ userPrompt: fileReviewPrompt });
-      console.log(response[0].message?.function_call.arguments);
+      console.log(response[0].message?.content);
       info(`Got file review response: ${JSON.stringify(response)}`);
       if (response?.length) {
         return this.parseResponse(response[0]);
@@ -27,9 +27,9 @@ class FileReview {
   }
 
   parseResponse(response) {
-    const review = JSON.parse(response?.message?.function_call.arguments);
-    review.comments =
-      typeof review.comments === 'string' ? JSON.parse(review.comments.replaceAll('\n', '')) : review.comments;
+    const review = JSON.parse(response?.message?.content);
+    // review.comments =
+    //   typeof review.comments === 'string' ? JSON.parse(review.comments.replaceAll('\n', '')) : review.comments;
 
     return review;
   }
