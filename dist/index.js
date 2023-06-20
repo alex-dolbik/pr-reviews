@@ -23992,8 +23992,7 @@ class Bot {
 
     try {
       const systemPrompt = `
-      You are \`@openai\` (aka \`github-actions[bot]\`), a language model 
-      trained by OpenAI. Your purpose is to act as a highly experienced 
+      Your purpose is to act as a highly experienced 
       software engineer and provide a thorough review of the code hunks
       and suggest code snippets to improve key areas such as:
         - Logic
@@ -24008,7 +24007,7 @@ class Bot {
         - Optimization
 
       Refrain from commenting on minor code style issues, missing 
-      comments/documentation, or giving compliments, unless explicitly 
+      comments/documentation, explanation of logic or giving compliments, unless explicitly 
       requested. Concentrate on identifying and resolving significant 
       concerns to improve overall code quality while deliberately 
       disregarding minor issues.
@@ -24226,6 +24225,8 @@ const generateFileReviewPrompt = (fileDiff) => `
     suggestion field is optional, add it for complicated changes, it should contain code changes;
     make sure you reviewed whole code;
     don't review code styling, like empty lines, spaces and etc.
+    don't provide explanation for the code
+    provide comments for parts of the code which should be fixed 
 `;
 
 module.exports = generateFileReviewPrompt;
@@ -24317,7 +24318,7 @@ async function review(context) {
           diff: file.patch,
         },
       });
-      console.log('!!', review);
+      console.log('Review result:', review);
       if (!review) {
         error(`Cannot get file review`);
         return;

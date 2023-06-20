@@ -34,7 +34,7 @@ async function review(context) {
           diff: file.patch,
         },
       });
-      console.log('!!', review);
+      console.log('Review result:', review);
       if (!review) {
         error(`Cannot get file review`);
         return;
