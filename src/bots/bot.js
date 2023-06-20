@@ -77,26 +77,26 @@ class Bot {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        functions: [
-          {
-            name: 'comment_on_file',
-            description: 'Please comment on the line of code',
-            parameters: {
-              type: 'object',
-              properties: {
-                file: {
-                  type: 'string',
-                  description: 'full path to filename',
-                },
-                comments: {
-                  type: 'string',
-                  description: 'json containing objects with <line>, <comment>, <suggestion>',
-                },
-              },
-            },
-            required: ['file', 'comments'],
-          },
-        ],
+        // functions: [
+        //   {
+        //     name: 'comment_on_file',
+        //     description: 'Please comment on the line of code',
+        //     parameters: {
+        //       type: 'object',
+        //       properties: {
+        //         file: {
+        //           type: 'string',
+        //           description: 'full path to filename',
+        //         },
+        //         comments: {
+        //           type: 'string',
+        //           description: 'json containing objects with <line>, <comment>, <suggestion>',
+        //         },
+        //       },
+        //     },
+        //     required: ['file', 'comments'],
+        //   },
+        // ],
       });
 
       console.log(result.data.choices);
