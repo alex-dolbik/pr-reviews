@@ -24326,7 +24326,7 @@ async function review(context) {
     pull_number: prNumber,
   });
 
-  console.log('changedFiles', changedFiles.data.files);
+  console.log('changedFiles', changedFiles);
 
   const data = await octokit.repos.compareCommits({
     owner: ownerName,
@@ -24335,7 +24335,7 @@ async function review(context) {
     head: context.payload.pull_request.head.sha,
   });
 
-  console.log('compareCommits', data);
+  console.log('compareCommits', data.data.files);
 
   // await Promise.all(
   //   changedFiles.map(async (item) => {
