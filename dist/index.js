@@ -24244,6 +24244,14 @@ const generateFileReviewPrompt = (fileDiff) => `
     
     Return response in JSON format 
     
+    How to parse file diff:
+    To determine file lines - check first line of file diff.
+    Example: @@ -30,8 +30,8 @@
+    It means that the provided file diff is started from line 30 of the file
+    
+    If file diff line starts with "-" sign, this line was deleted
+    If file diff line starts with "+" sign, this line was added
+    
     File diff:
    \\n --- \\n ${fileDiff.diff} \\n --- \\n
 `;
