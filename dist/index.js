@@ -24244,8 +24244,12 @@ const generateFileReviewPrompt = (fileDiff) => `
     
     Return response in JSON format 
     
+    where "line" - number of line in the file
+    "comment" - your comment for it
+    "suggestion" - how the line can be fixed
+    
     How to parse file diff:
-    To determine file line number - check number at the line start
+    For each line at the start you can find line number, use it in "line" field
     
     If file diff line starts with "-" sign, this line was deleted
     If file diff line starts with "+" sign, this line was added
