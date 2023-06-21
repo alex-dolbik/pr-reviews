@@ -24458,7 +24458,7 @@ async function review(context) {
         commitId,
       });
 
-      // await commenter.sendReviews(review);
+      await commenter.sendReviews(review);
     }),
   );
 }
