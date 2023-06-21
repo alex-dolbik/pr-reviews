@@ -24328,6 +24328,25 @@ async function review(context) {
 
   console.log('changedFiles', changedFiles);
 
+  await Promise.all(
+    changedFiles.map(async (item) => {
+      const contents = await octokit.repos.getContent({
+        owner: ownerName,
+        repo: repoName,
+        path: item.filename,
+        ref: commitId,
+      });
+      if (contents.data != null) {
+        if (!Array.isArray(contents.data)) {
+          if (contents.data.type === 'file' && contents.data.content != null) {
+            fileContent = Buffer.from(contents.data.content, 'base64').toString();
+          }
+        }
+      }
+      console.log('contents', item.filename, contents);
+    }),
+  );
+
   const bot = new Bot();
   const fileReview = new FileReview({ bot });
 
