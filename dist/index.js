@@ -24326,7 +24326,7 @@ async function review(context) {
     pull_number: prNumber,
   });
 
-  console.log('changedFiles', changedFiles);
+  console.log('changedFiles', changedFiles.data.files);
 
   const data = await octokit.repos.compareCommits({
     owner: ownerName,
