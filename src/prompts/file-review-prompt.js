@@ -4,8 +4,11 @@ const generateFileReviewPrompt = (fileDiff) => `
     each comment should be a json object with line, comment and suggestion fields.;
     suggestion field is optional, it should contain suggested code fixes for commented line if possible;
     make sure you reviewed whole code;
-    don't review code styling, like empty lines, spaces and etc.
+    don't review code styling, like empty lines, spaces and etc
+    don't lint lint the code
+    don't check code formatting
     don't provide explanation of the code
+    don't check naming
     don't request code explanation in review
     mark only important problems with the code which may cause errors or issues
     follow best practises
