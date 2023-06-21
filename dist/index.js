@@ -24326,6 +24326,8 @@ async function review(context) {
     pull_number: prNumber,
   });
 
+  console.log('changedFiles', changedFiles);
+
   const bot = new Bot();
   const fileReview = new FileReview({ bot });
 
