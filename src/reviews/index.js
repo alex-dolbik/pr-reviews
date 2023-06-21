@@ -122,16 +122,16 @@ async function review(context) {
 
   await Promise.all(
     [changedFiles[1]].map(async (file) => {
+      const hunkInfo = parsePatch(file.patch);
+      console.log('hunkInfo', hunkInfo);
+
       const review = await fileReview.review({
         fileDiff: {
           fileName: file.filename,
-          diff: file.patch,
+          diff: hunkInfo.newHunk, // file.patch,
         },
       });
       console.log('Review result:', review);
-
-      const hunkInfo = parsePatch(file.patch);
-      console.log('hunkInfo', hunkInfo);
 
       if (!review) {
         error(`Cannot get file review`);
@@ -145,7 +145,7 @@ async function review(context) {
         commitId,
       });
 
-      await commenter.sendReviews(review);
+      // await commenter.sendReviews(review);
     }),
   );
 }
