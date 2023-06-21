@@ -24245,9 +24245,7 @@ const generateFileReviewPrompt = (fileDiff) => `
     Return response in JSON format 
     
     How to parse file diff:
-    To determine file lines - check first line of file diff.
-    Example: @@ -30,8 +30,8 @@
-    It means that the provided file diff is started from line 30 of the file
+    To determine file line number - check number at the line start
     
     If file diff line starts with "-" sign, this line was deleted
     If file diff line starts with "+" sign, this line was added
