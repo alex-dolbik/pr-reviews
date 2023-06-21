@@ -24339,7 +24339,8 @@ async function review(context) {
       if (contents.data != null) {
         if (!Array.isArray(contents.data)) {
           if (contents.data.type === 'file' && contents.data.content != null) {
-            fileContent = Buffer.from(contents.data.content, 'base64').toString();
+            const fileContent = Buffer.from(contents.data.content, 'base64').toString();
+            console.log('fileContent', fileContent);
           }
         }
       }
