@@ -1,7 +1,7 @@
 const { warning, info, error } = require('@actions/core');
 const { minimatch } = require('minimatch');
 
-export class PathFilter {
+class PathFilter {
   constructor(rules) {
     this.rules = [];
     if (rules) {
