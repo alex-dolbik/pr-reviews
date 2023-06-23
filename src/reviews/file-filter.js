@@ -1,5 +1,5 @@
 const { warning, info, error } = require('@actions/core');
-import { minimatch } from 'minimatch';
+const { minimatch } = require('minimatch');
 
 export class PathFilter {
   constructor(rules) {
