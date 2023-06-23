@@ -1,78 +1,20 @@
-const { warning, info, error } = require('@actions/core');
+const { warning, info, error, getMultilineInput } = require('@actions/core');
 
 const octokit = require('../github/octokit');
 const Bot = require('../bots/bot');
 const FileReview = require('./file-review');
 const Commenter = require('../github/commenter');
-
-const parsePatch = (patch) => {
-  const hunkInfo = patchStartEndLine(patch);
-  if (hunkInfo == null) {
-    return null;
-  }
-
-  const oldHunkLines = [];
-  const newHunkLines = [];
-
-  // let old_line = hunkInfo.old_hunk.start_line
-  let newLine = hunkInfo.newHunk.startLine;
-
-  const lines = patch.split('\n').slice(1); // Skip the @@ line
-
-  // Remove the last line if it's empty
-  if (lines[lines.length - 1] === '') {
-    lines.pop();
-  }
-
-  for (const line of lines) {
-    if (line.startsWith('-')) {
-      oldHunkLines.push(`${line.substring(1)}`);
-      // old_line++
-    } else if (line.startsWith('+')) {
-      newHunkLines.push(`${newLine}: ${line.substring(1)}`);
-      newLine++;
-    } else {
-      oldHunkLines.push(`${line}`);
-      newHunkLines.push(`${newLine}: ${line}`);
-      // old_line++
-      newLine++;
-    }
-  }
-
-  return {
-    oldHunk: oldHunkLines.join('\n'),
-    newHunk: newHunkLines.join('\n'),
-  };
-};
-
-const patchStartEndLine = (patch) => {
-  const pattern = /(^@@ -(\d+),(\d+) \+(\d+),(\d+) @@)/gm;
-  const match = pattern.exec(patch);
-  if (match != null) {
-    const oldBegin = parseInt(match[2]);
-    const oldDiff = parseInt(match[3]);
-    const newBegin = parseInt(match[4]);
-    const newDiff = parseInt(match[5]);
-    return {
-      oldHunk: {
-        startLine: oldBegin,
-        endLine: oldBegin + oldDiff - 1,
-      },
-      newHunk: {
-        startLine: newBegin,
-        endLine: newBegin + newDiff - 1,
-      },
-    };
-  } else {
-    return null;
-  }
-};
+const { parseDiff } = require('../utils/file-diff');
+const FilterPath = require('./file-filter');
 
 async function review(context) {
   if (context.payload.pull_request == null) {
     warning('Skipped: context.payload.pull_request is null');
     return;
   }
+
+  const pathFilters = getMultilineInput('path_filters');
+  const filesFilter = new FilterPath(pathFilters);
 
   const repo = context.payload.repository;
   const ownerName = repo.owner.login;
@@ -85,8 +27,9 @@ async function review(context) {
     repo: repoName,
     pull_number: prNumber,
   });
+  const filteredFiles = changedFiles.filter((file) => filesFilter.check(file.filename));
 
-  console.log('changedFiles', changedFiles);
+  console.log('changedFiles', changedFiles, filteredFiles);
 
   const data = await octokit.repos.compareCommits({
     owner: ownerName,
@@ -95,7 +38,7 @@ async function review(context) {
     head: context.payload.pull_request.head.sha,
   });
 
-  console.log('compareCommits', data.data.files);
+  // console.log('compareCommits', data.data.files);
 
   // await Promise.all(
   //   changedFiles.map(async (item) => {
@@ -121,8 +64,8 @@ async function review(context) {
   const fileReview = new FileReview({ bot });
 
   await Promise.all(
-    [changedFiles[1]].map(async (file) => {
-      const hunkInfo = parsePatch(file.patch);
+    filteredFiles.map(async (file) => {
+      const hunkInfo = parseDiff(file.patch);
       console.log('hunkInfo', hunkInfo);
 
       const review = await fileReview.review({

@@ -28,8 +28,6 @@ class FileReview {
 
   parseResponse(response) {
     const review = JSON.parse(response?.message?.content);
-    // review.comments =
-    //   typeof review.comments === 'string' ? JSON.parse(review.comments.replaceAll('\n', '')) : review.comments;
 
     return review;
   }
