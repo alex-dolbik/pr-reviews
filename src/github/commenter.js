@@ -1,6 +1,9 @@
 const { info, warning, error } = require('@actions/core');
+const { chunk } = require('lodash/chunk');
 
 const octokit = require('./octokit');
+
+const COMMENTS_HANDLED_AT_TIME = 5;
 
 class Commenter {
   constructor({ ownerName, repoName, prNumber, commitId }) {
@@ -13,16 +16,23 @@ class Commenter {
   }
 
   async sendReviews({ file, comments }) {
-    return await Promise.all(
-      comments.map(({ line, comment }) => {
-        return this.sendReviewComment({
-          path: file,
-          startLine: line,
-          endLine: line,
-          message: comment,
-        });
-      }),
-    );
+    const chunks = chunk(comments, COMMENTS_HANDLED_AT_TIME);
+    for (let i = 0; i < chunks.length; i++) {
+      await Promise.allSettled(
+        comments.map(({ line, comment }) => {
+          const commentData = {
+            path: file,
+            startLine: line,
+            endLine: line,
+            message: comment,
+          };
+
+          return this.sendReviewComment(commentData).catch(() => {
+            error(`Cannot create a comment: ${JSON.stringify(commentData)}`);
+          });
+        }),
+      );
+    }
   }
 
   async sendReviewComment(comment) {

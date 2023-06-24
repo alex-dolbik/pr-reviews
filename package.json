@@ -10,6 +10,7 @@
     "@octokit/action": "^6.0.3",
     "@octokit/plugin-retry": "^5.0.4",
     "@octokit/plugin-throttling": "^6.1.0",
+    "lodash": "^4.17.21",
     "minimatch": "^9.0.1",
     "openai": "^3.3.0"
   },
