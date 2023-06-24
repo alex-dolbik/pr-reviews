@@ -3,7 +3,7 @@ const generateFileReviewPrompt = (fileDiff) => `
    What do you think of this code?
     each comment should be a json object with line, comment and suggestion fields.;
     suggestion field is optional, it should contain suggested code fixes for commented line if possible;
-    make sure you reviewed whole code;
+    make sure you reviewed whole code for possible improvements;
     don't review code styling, like empty lines, spaces and etc
     don't lint lint the code
     don't check code formatting
@@ -12,6 +12,9 @@ const generateFileReviewPrompt = (fileDiff) => `
     don't request code explanation in review
     mark only important problems with the code which may cause errors or issues
     follow best practises
+    pay attention on unneeded console.log
+    take your time and review the code carefully
+    if function or react component is exported from another file think that all provided props are defined in exported service  
     
     Final result should be like
     

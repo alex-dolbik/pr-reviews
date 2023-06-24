@@ -23,13 +23,17 @@ class PathFilter {
       return true;
     }
 
+    let handledPath = path;
+    if (path.startsWith('.')) {
+      handledPath = path.substring(1);
+    }
+
     let included = false;
     let excluded = false;
     let inclusionRuleExists = false;
 
     for (const [rule, exclude] of this.rules) {
-      info(`Path check: path - ${path}; rule - ${rule}; exclude - ${exclude}; result - ${minimatch(path, rule)}`);
-      if (minimatch(path, rule)) {
+      if (minimatch(handledPath, rule)) {
         if (exclude) {
           excluded = true;
         } else {

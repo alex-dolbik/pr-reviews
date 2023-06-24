@@ -27,16 +27,22 @@ async function review(context) {
     repo: repoName,
     pull_number: prNumber,
   });
-  const filteredFiles = changedFiles.filter((file) => filesFilter.check(file.filename));
 
-  console.log('changedFiles', changedFiles, filteredFiles);
+  const filteredFiles = changedFiles.filter((file) => {
+    const isFileTypeAccepted = filesFilter.check(file.filename);
+    if (!isFileTypeAccepted) {
+      info(`skip for excluded path: ${file.filename}`);
+    }
 
-  const data = await octokit.repos.compareCommits({
-    owner: ownerName,
-    repo: repoName,
-    base: context.payload.pull_request.base.sha,
-    head: context.payload.pull_request.head.sha,
+    return isFileTypeAccepted;
   });
+
+  // const data = await octokit.repos.compareCommits({
+  //   owner: ownerName,
+  //   repo: repoName,
+  //   base: context.payload.pull_request.base.sha,
+  //   head: context.payload.pull_request.head.sha,
+  // });
 
   // console.log('compareCommits', data.data.files);
 

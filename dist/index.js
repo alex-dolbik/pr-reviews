@@ -24506,7 +24506,7 @@ const generateFileReviewPrompt = (fileDiff) => `
    What do you think of this code?
     each comment should be a json object with line, comment and suggestion fields.;
     suggestion field is optional, it should contain suggested code fixes for commented line if possible;
-    make sure you reviewed whole code;
+    make sure you reviewed whole code for possible improvements;
     don't review code styling, like empty lines, spaces and etc
     don't lint lint the code
     don't check code formatting
@@ -24515,6 +24515,9 @@ const generateFileReviewPrompt = (fileDiff) => `
     don't request code explanation in review
     mark only important problems with the code which may cause errors or issues
     follow best practises
+    pay attention on unneeded console.log
+    take your time and review the code carefully
+    if function or react component is exported from another file think that all provided props are defined in exported service  
     
     Final result should be like
     
@@ -24574,13 +24577,17 @@ class PathFilter {
       return true;
     }
 
+    let handledPath = path;
+    if (path.startsWith('.')) {
+      handledPath = path.substring(1);
+    }
+
     let included = false;
     let excluded = false;
     let inclusionRuleExists = false;
 
     for (const [rule, exclude] of this.rules) {
-      info(`Path check: path - ${path}; rule - ${rule}; exclude - ${exclude}; result - ${minimatch(path, rule)}`);
-      if (minimatch(path, rule)) {
+      if (minimatch(handledPath, rule)) {
         if (exclude) {
           excluded = true;
         } else {
@@ -24676,16 +24683,22 @@ async function review(context) {
     repo: repoName,
     pull_number: prNumber,
   });
-  const filteredFiles = changedFiles.filter((file) => filesFilter.check(file.filename));
 
-  console.log('changedFiles', changedFiles, filteredFiles);
+  const filteredFiles = changedFiles.filter((file) => {
+    const isFileTypeAccepted = filesFilter.check(file.filename);
+    if (!isFileTypeAccepted) {
+      info(`skip for excluded path: ${file.filename}`);
+    }
 
-  const data = await octokit.repos.compareCommits({
-    owner: ownerName,
-    repo: repoName,
-    base: context.payload.pull_request.base.sha,
-    head: context.payload.pull_request.head.sha,
+    return isFileTypeAccepted;
   });
+
+  // const data = await octokit.repos.compareCommits({
+  //   owner: ownerName,
+  //   repo: repoName,
+  //   base: context.payload.pull_request.base.sha,
+  //   head: context.payload.pull_request.head.sha,
+  // });
 
   // console.log('compareCommits', data.data.files);
 
