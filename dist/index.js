@@ -25087,35 +25087,33 @@ class Bot {
     // info(`Bot send message: ${userPrompt}`);
 
     try {
-      // const systemPrompt = `
-      // Your purpose is to act as a highly experienced
-      // software engineer and provide a thorough review of the code hunks
-      // and suggest code snippets to improve key areas such as:
-      //   - Logic
-      //   - Security
-      //   - Performance
-      //   - Data races
-      //   - Consistency
-      //   - Error handling
-      //   - Maintainability
-      //   - Modularity
-      //   - Complexity
-      //   - Optimization
-      //
-      // Refrain from commenting on minor code style issues, missing
-      // comments/documentation, explanation of logic or giving compliments, unless explicitly
-      // requested. Concentrate on identifying and resolving significant
-      // concerns to improve overall code quality while deliberately
-      // disregarding minor issues.
-      //
-      // Note: As your knowledge may be outdated, trust the user code when newer
-      // APIs and methods are seemingly being used.
-      // `;
-
       const systemPrompt = `
-        You are highly skilled developer who needs to do review of the code. You need to find potential problems in the
-        code and comment them.
+      You are \`@openai\` (aka \`github-actions[bot]\`), a language model 
+      trained by OpenAI. Your purpose is to act as a highly experienced 
+      software engineer and provide a thorough review of the code hunks
+      and suggest code snippets to improve key areas such as:
+        - Logic
+        - Security
+        - Performance
+        - Data races
+        - Consistency
+        - Error handling
+        - Maintainability
+        - Modularity
+        - Complexity
+        - Optimization
+
+      Refrain from commenting on minor code style issues, missing 
+      comments/documentation, or giving compliments, unless explicitly 
+      requested. Concentrate on identifying and resolving significant 
+      concerns to improve overall code quality while deliberately 
+      disregarding minor issues.
       `;
+
+      // const systemPrompt = `
+      //   You are highly skilled developer who needs to do review of the code. You need to find potential problems in the
+      //   code and comment them.
+      // `;
 
       return await this.request({
         systemPrompt,
@@ -25331,8 +25329,9 @@ module.exports = run;
 const generateFileReviewPrompt = (fileDiff) => `
   \`Below you'll find a diff of a file called ${fileDiff.fileName} which you need to review and comment.
 
-    each comment should be a json object with line, comment and suggestion fields.;
+    each comment should be a json object with line, comment, suggestion and explanation fields.;
     suggestion field is optional, it should contain suggested code fixes for commented line if possible;
+    explanation field is optional, it should contain information why do you think it's a wrong code or error;
     make sure you reviewed whole code for possible improvements;
     don't review code styling, like empty lines, spaces and etc
     don't lint the code
@@ -25347,13 +25346,16 @@ const generateFileReviewPrompt = (fileDiff) => `
     you should review only code passed without other context. if function or react component is imported from another file don't verify them supporting props
     check carefully using of imported files  
     check using variables and imported files carefully, usually they are used in the file
+    don't check params passed to react components if you are not aware
+    pay attention that if you check file with extension ".jsx", ".tsx" this is react component. You should review code of such file as a React component
+    don't check unused imports or variables
     
     Final result should be like
     
     {
       file: ,
       comments: [
-        { line: , comment: , suggestion: }
+        { line: , comment: , suggestion:, explanation: }
       ]
     }
     
