@@ -16,6 +16,7 @@ const generateFileReviewPrompt = (fileDiff) => `
     take your time and review the code carefully
     you should review only code passed without other context. if function or react component is imported from another file don't verify them supporting props
     check carefully using of imported files  
+    check using variables and imported files carefully, usually they are used in the file
     
     Final result should be like
     
