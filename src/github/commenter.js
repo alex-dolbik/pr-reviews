@@ -18,6 +18,7 @@ class Commenter {
   async sendReviews({ file, comments }) {
     const chunks = chunk(comments, COMMENTS_HANDLED_AT_TIME);
     for (let i = 0; i < chunks.length; i++) {
+      const comments = chunks[i];
       await Promise.allSettled(
         comments.map(({ line, comment }) => {
           const commentData = {
