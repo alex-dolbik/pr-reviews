@@ -1,5 +1,5 @@
 const { info, warning, error } = require('@actions/core');
-const { chunk } = require('lodash/chunk');
+const chunk = require('lodash/chunk');
 
 const octokit = require('./octokit');
 

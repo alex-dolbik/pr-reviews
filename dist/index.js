@@ -25185,7 +25185,7 @@ module.exports = Bot;
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const { info, warning, error } = __nccwpck_require__(2186);
-const { chunk } = __nccwpck_require__(9908);
+const chunk = __nccwpck_require__(9908);
 
 const octokit = __nccwpck_require__(1823);
 
