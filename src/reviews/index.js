@@ -37,35 +37,6 @@ async function review(context) {
     return isFileTypeAccepted;
   });
 
-  // const data = await octokit.repos.compareCommits({
-  //   owner: ownerName,
-  //   repo: repoName,
-  //   base: context.payload.pull_request.base.sha,
-  //   head: context.payload.pull_request.head.sha,
-  // });
-
-  // console.log('compareCommits', data.data.files);
-
-  // await Promise.all(
-  //   changedFiles.map(async (item) => {
-  //     const contents = await octokit.repos.getContent({
-  //       owner: ownerName,
-  //       repo: repoName,
-  //       path: item.filename,
-  //       ref: commitId,
-  //     });
-  //     if (contents.data != null) {
-  //       if (!Array.isArray(contents.data)) {
-  //         if (contents.data.type === 'file' && contents.data.content != null) {
-  //           const fileContent = Buffer.from(contents.data.content, 'base64').toString();
-  //           console.log('fileContent', fileContent);
-  //         }
-  //       }
-  //     }
-  //     console.log('contents', item.filename, contents);
-  //   }),
-  // );
-
   const bot = new Bot();
   const fileReview = new FileReview({ bot });
 

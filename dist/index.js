@@ -25315,7 +25315,7 @@ const run = async ({ fileDiff } = {}) => {
     return review(githubContext);
   }
 
-  warning(`Skipped: current event is ${context.eventName}, only support pull_request event`);
+  warning(`Skipped: current event is ${githubContext.eventName}, only support pull_request event`);
 };
 
 run();
@@ -25330,12 +25330,12 @@ module.exports = run;
 
 const generateFileReviewPrompt = (fileDiff) => `
   \`Below you'll find a diff of a file called ${fileDiff.fileName} which you need to review and comment.
-   What do you think of this code?
+
     each comment should be a json object with line, comment and suggestion fields.;
     suggestion field is optional, it should contain suggested code fixes for commented line if possible;
     make sure you reviewed whole code for possible improvements;
     don't review code styling, like empty lines, spaces and etc
-    don't lint lint the code
+    don't lint the code
     don't check code formatting
     don't provide explanation of the code
     don't check naming
@@ -25344,7 +25344,8 @@ const generateFileReviewPrompt = (fileDiff) => `
     follow best practises
     pay attention on unneeded console.log
     take your time and review the code carefully
-    if function or react component is exported from another file think that all provided props are defined in exported service  
+    you should review only code passed without other context. if function or react component is imported from another file don't verify them supporting props
+    check carefully using of imported files  
     
     Final result should be like
     
@@ -25519,35 +25520,6 @@ async function review(context) {
 
     return isFileTypeAccepted;
   });
-
-  // const data = await octokit.repos.compareCommits({
-  //   owner: ownerName,
-  //   repo: repoName,
-  //   base: context.payload.pull_request.base.sha,
-  //   head: context.payload.pull_request.head.sha,
-  // });
-
-  // console.log('compareCommits', data.data.files);
-
-  // await Promise.all(
-  //   changedFiles.map(async (item) => {
-  //     const contents = await octokit.repos.getContent({
-  //       owner: ownerName,
-  //       repo: repoName,
-  //       path: item.filename,
-  //       ref: commitId,
-  //     });
-  //     if (contents.data != null) {
-  //       if (!Array.isArray(contents.data)) {
-  //         if (contents.data.type === 'file' && contents.data.content != null) {
-  //           const fileContent = Buffer.from(contents.data.content, 'base64').toString();
-  //           console.log('fileContent', fileContent);
-  //         }
-  //       }
-  //     }
-  //     console.log('contents', item.filename, contents);
-  //   }),
-  // );
 
   const bot = new Bot();
   const fileReview = new FileReview({ bot });

@@ -13,7 +13,7 @@ const run = async ({ fileDiff } = {}) => {
     return review(githubContext);
   }
 
-  warning(`Skipped: current event is ${context.eventName}, only support pull_request event`);
+  warning(`Skipped: current event is ${githubContext.eventName}, only support pull_request event`);
 };
 
 run();
