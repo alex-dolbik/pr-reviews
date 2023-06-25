@@ -25528,7 +25528,7 @@ async function review(context) {
   await Promise.all(
     filteredFiles.map(async (file) => {
       const hunkInfo = parseDiff(file.patch);
-      console.log('hunkInfo', hunkInfo);
+      console.log('hunkInfo', hunkInfo, file.patch);
 
       const review = await fileReview.review({
         fileDiff: {
