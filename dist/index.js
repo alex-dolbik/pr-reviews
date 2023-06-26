@@ -25220,6 +25220,28 @@ class Commenter {
     }
   }
 
+  async resolveReviews() {
+    const comments = await octokit.pulls.listReviewComments({
+      owner: this.repo.owner,
+      repo: this.repo.name,
+      pull_number: this.prNumber,
+    });
+
+    // const userToResolve = 'USERNAME'; // Replace with the username you want to resolve comments from
+
+    for (const comment of comments.data) {
+      // if (comment.user.login === userToResolve) {
+      await octokit.pulls.updateReviewComment({
+        owner: this.repo.owner,
+        repo: this.repo.name,
+        comment_id: comment.id,
+        body: comment.body,
+        event: 'RESOLVE',
+      });
+      // }
+    }
+  }
+
   async sendReviewComment(comment) {
     info(
       `Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message} in ${this.repo.owner}/${this.repo.name}`,
@@ -25326,30 +25348,57 @@ module.exports = run;
 /***/ 7399:
 /***/ ((module) => {
 
+// Below you'll find a diff of a file called ${fileDiff.fileName} which you need to do a code review and comment.
+//
+// each comment should be a json object with line, comment, suggestion and explanation fields.;
+// suggestion field is optional, it should contain suggested code fixes for commented line if possible;
+// explanation field is optional, it should contain information why do you think it's a wrong code or error;
+//
+// make sure you reviewed whole code for possible improvements;
+// don't review code styling, like empty lines, spaces and etc;
+// don't lint the code;
+// don't check code formatting;
+// don't provide explanation of the code;
+// don't check naming;
+// don't request code explanation in review;
+// mark only important problems with the code which may cause errors or issues;
+// follow best practises in development;
+// pay attention on unneeded console.log;
+// take your time and review the code carefully;
+// you should review only code passed without other context. if function or react component is imported from another file don't verify them supporting props
+// check using variables and imported files carefully, usually they are used in the file
+// don't check params passed to react components if you are not aware
+// pay attention that if you check file with extension ".jsx", ".tsx" this is react component. You should review code of such file as a React component
+// pay attention on code performance and code logic;
+//
+// Final result should be like
+//
+// {
+//   file: ,
+//   comments: [
+//     { line: , comment: , suggestion:, explanation: }
+//   ]
+// }
+//
+// Return response in JSON format
+//
+// where "line" - number of line in the file
+// "comment" - your comment for it
+//   "suggestion" - how the line can be fixed
+//
+// How to parse file diff:
+//   For each line at the start you can find line number, use it in "line" field
+//
+// If file diff line starts with "-" sign, this line was deleted
+// If file diff line starts with "+" sign, this line was added
+
 const generateFileReviewPrompt = (fileDiff) => `
-  \`Below you'll find a diff of a file called ${fileDiff.fileName} which you need to review and comment.
+    Below you'll find a diff of a file called ${fileDiff.fileName} which you need to do a code review and comment.
 
     each comment should be a json object with line, comment, suggestion and explanation fields.;
     suggestion field is optional, it should contain suggested code fixes for commented line if possible;
     explanation field is optional, it should contain information why do you think it's a wrong code or error;
-    make sure you reviewed whole code for possible improvements;
-    don't review code styling, like empty lines, spaces and etc
-    don't lint the code
-    don't check code formatting
-    don't provide explanation of the code
-    don't check naming
-    don't request code explanation in review
-    mark only important problems with the code which may cause errors or issues
-    follow best practises
-    pay attention on unneeded console.log
-    take your time and review the code carefully
-    you should review only code passed without other context. if function or react component is imported from another file don't verify them supporting props
-    check carefully using of imported files  
-    check using variables and imported files carefully, usually they are used in the file
-    don't check params passed to react components if you are not aware
-    pay attention that if you check file with extension ".jsx", ".tsx" this is react component. You should review code of such file as a React component
-    don't check unused imports or variables
-    
+
     Final result should be like
     
     {
@@ -25361,7 +25410,8 @@ const generateFileReviewPrompt = (fileDiff) => `
     
     Return response in JSON format 
     
-    where "line" - number of line in the file
+    where
+    "line" - number of line in the file
     "comment" - your comment for it
     "suggestion" - how the line can be fixed
     
@@ -25527,6 +25577,15 @@ async function review(context) {
   const bot = new Bot();
   const fileReview = new FileReview({ bot });
 
+  const commenter = new Commenter({
+    ownerName,
+    repoName,
+    prNumber,
+    commitId,
+  });
+
+  await commenter.resolveReviews();
+
   await Promise.all(
     filteredFiles.map(async (file) => {
       const hunkInfo = parseDiff(file.patch);
@@ -25544,13 +25603,6 @@ async function review(context) {
         error(`Cannot get file review`);
         return;
       }
-
-      const commenter = new Commenter({
-        ownerName,
-        repoName,
-        prNumber,
-        commitId,
-      });
 
       await commenter.sendReviews(review);
     }),

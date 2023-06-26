@@ -40,6 +40,15 @@ async function review(context) {
   const bot = new Bot();
   const fileReview = new FileReview({ bot });
 
+  const commenter = new Commenter({
+    ownerName,
+    repoName,
+    prNumber,
+    commitId,
+  });
+
+  await commenter.resolveReviews();
+
   await Promise.all(
     filteredFiles.map(async (file) => {
       const hunkInfo = parseDiff(file.patch);
@@ -57,13 +66,6 @@ async function review(context) {
         error(`Cannot get file review`);
         return;
       }
-
-      const commenter = new Commenter({
-        ownerName,
-        repoName,
-        prNumber,
-        commitId,
-      });
 
       await commenter.sendReviews(review);
     }),

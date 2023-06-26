@@ -36,6 +36,28 @@ class Commenter {
     }
   }
 
+  async resolveReviews() {
+    const comments = await octokit.pulls.listReviewComments({
+      owner: this.repo.owner,
+      repo: this.repo.name,
+      pull_number: this.prNumber,
+    });
+
+    // const userToResolve = 'USERNAME'; // Replace with the username you want to resolve comments from
+
+    for (const comment of comments.data) {
+      // if (comment.user.login === userToResolve) {
+      await octokit.pulls.updateReviewComment({
+        owner: this.repo.owner,
+        repo: this.repo.name,
+        comment_id: comment.id,
+        body: comment.body,
+        event: 'RESOLVE',
+      });
+      // }
+    }
+  }
+
   async sendReviewComment(comment) {
     info(
       `Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message} in ${this.repo.owner}/${this.repo.name}`,

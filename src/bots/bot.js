@@ -70,7 +70,7 @@ class Bot {
 
     try {
       const result = await this.api.createChatCompletion({
-        model: 'gpt-4-0613',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
