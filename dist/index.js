@@ -25116,7 +25116,7 @@ class Bot {
       // `;
 
       return await this.request({
-        systemPrompt,
+        systemPrompt: this.options?.systemMessage || systemPrompt,
         userPrompt,
       });
     } catch (e) {
@@ -25136,7 +25136,8 @@ class Bot {
 
     try {
       const result = await this.api.createChatCompletion({
-        model: 'gpt-3.5-turbo',
+        model: this.options?.model || 'gpt-3.5-turbo',
+        temperature: this.options?.modelTemperature || 0.0,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -25199,7 +25200,7 @@ class Commenter {
     this.commitId = commitId;
   }
 
-  async sendReviews({ file, comments }) {
+  async sendComments({ file, comments }) {
     const chunks = chunk(comments, COMMENTS_HANDLED_AT_TIME);
     for (let i = 0; i < chunks.length; i++) {
       const comments = chunks[i];
@@ -25212,7 +25213,7 @@ class Commenter {
             message: comment,
           };
 
-          return this.sendReviewComment(commentData).catch(() => {
+          return this.sendComment(commentData).catch(() => {
             error(`Cannot create a comment: ${JSON.stringify(commentData)}`);
           });
         }),
@@ -25220,7 +25221,7 @@ class Commenter {
     }
   }
 
-  async resolveReviews() {
+  async cleanBotComments() {
     const comments = await octokit.pulls.listReviewComments({
       owner: this.repo.owner,
       repo: this.repo.name,
@@ -25242,7 +25243,7 @@ class Commenter {
     }
   }
 
-  async sendReviewComment(comment) {
+  async sendComment(comment) {
     info(
       `Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message} in ${this.repo.owner}/${this.repo.name}`,
     );
@@ -25323,16 +25324,17 @@ module.exports = octokit;
 const { info, warning } = __nccwpck_require__(2186);
 const { context: githubContext } = __nccwpck_require__(5438);
 
-const review = __nccwpck_require__(5669);
+const PrReview = __nccwpck_require__(837);
 
-const run = async ({ fileDiff } = {}) => {
+const run = async () => {
   // run file review
   // info(
   //   `githubContext ${JSON.stringify(githubContext)}`
   // )
 
   if (['pull_request', 'pull_request_target'].includes(githubContext.eventName)) {
-    return review(githubContext);
+    const reviewer = new PrReview(githubContext);
+    return reviewer.review();
   }
 
   warning(`Skipped: current event is ${githubContext.eventName}, only support pull_request event`);
@@ -25532,10 +25534,10 @@ module.exports = FileReview;
 
 /***/ }),
 
-/***/ 5669:
+/***/ 837:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { warning, info, error, getMultilineInput } = __nccwpck_require__(2186);
+const { warning, info, error, getMultilineInput, getInput } = __nccwpck_require__(2186);
 
 const octokit = __nccwpck_require__(1823);
 const Bot = __nccwpck_require__(5041);
@@ -25544,72 +25546,83 @@ const Commenter = __nccwpck_require__(1762);
 const { parseDiff } = __nccwpck_require__(2586);
 const FilterPath = __nccwpck_require__(4792);
 
-async function review(context) {
-  if (context.payload.pull_request == null) {
-    warning('Skipped: context.payload.pull_request is null');
-    return;
-  }
-
-  const pathFilters = getMultilineInput('path_filters');
-  const filesFilter = new FilterPath(pathFilters);
-
-  const repo = context.payload.repository;
-  const ownerName = repo.owner.login;
-  const repoName = repo.name;
-  const prNumber = context.payload.pull_request.number;
-  const commitId = context.payload.pull_request.head.sha;
-
-  const { data: changedFiles } = await octokit.rest.pulls.listFiles({
-    owner: ownerName,
-    repo: repoName,
-    pull_number: prNumber,
-  });
-
-  const filteredFiles = changedFiles.filter((file) => {
-    const isFileTypeAccepted = filesFilter.check(file.filename);
-    if (!isFileTypeAccepted) {
-      info(`skip for excluded path: ${file.filename}`);
+class PrReview {
+  constructor(context) {
+    if (context.payload.pull_request == null) {
+      warning('Skipped: context.payload.pull_request is null');
+      return;
     }
 
-    return isFileTypeAccepted;
-  });
+    const pathFilters = getMultilineInput('path_filters');
+    const repo = context.payload.repository;
+    this.ownerName = repo.owner.login;
+    this.repoName = repo.name;
+    this.prNumber = context.payload.pull_request.number;
+    this.commitId = context.payload.pull_request.head.sha;
 
-  const bot = new Bot();
-  const fileReview = new FileReview({ bot });
+    const bot = new Bot({
+      model: getInput('openai_model'),
+      modelTemperature: getInput('openai_model_temperature'),
+      systemMessage: getInput('system_message'),
+    });
+    this.fileReview = new FileReview({ bot });
+    this.commenter = new Commenter({
+      ownerName: this.ownerName,
+      repoName: this.repoName,
+      prNumber: this.prNumber,
+      commitId: this.commitId,
+    });
+    this.filesFilter = new FilterPath(pathFilters);
+  }
 
-  const commenter = new Commenter({
-    ownerName,
-    repoName,
-    prNumber,
-    commitId,
-  });
+  async getChangedFiles() {
+    const { data: changedFiles } = await octokit.rest.pulls.listFiles({
+      owner: this.ownerName,
+      repo: this.repoName,
+      pull_number: this.prNumber,
+    });
 
-  await commenter.resolveReviews();
+    return changedFiles;
+  }
 
-  await Promise.all(
-    filteredFiles.map(async (file) => {
-      const hunkInfo = parseDiff(file.patch);
-      console.log('hunkInfo', hunkInfo, file.patch);
-
-      const review = await fileReview.review({
-        fileDiff: {
-          fileName: file.filename,
-          diff: hunkInfo.newHunk, // file.patch,
-        },
-      });
-      console.log('Review result:', review);
-
-      if (!review) {
-        error(`Cannot get file review`);
-        return;
+  async review() {
+    const changedFiles = await this.getChangedFiles();
+    const filteredFiles = changedFiles.filter((file) => {
+      const isFileTypeAccepted = this.filesFilter.check(file.filename);
+      if (!isFileTypeAccepted) {
+        info(`skip for excluded path: ${file.filename}`);
       }
 
-      await commenter.sendReviews(review);
-    }),
-  );
+      return isFileTypeAccepted;
+    });
+
+    await this.commenter.cleanBotComments();
+
+    await Promise.all(
+      filteredFiles.map(async (file) => {
+        const hunkInfo = parseDiff(file.patch);
+        console.log('hunkInfo', hunkInfo, file.patch);
+
+        const review = await this.fileReview.review({
+          fileDiff: {
+            fileName: file.filename,
+            diff: hunkInfo.newHunk, // file.patch,
+          },
+        });
+        console.log('Review result:', review);
+
+        if (!review) {
+          error(`Cannot get file review`);
+          return;
+        }
+
+        await this.commenter.sendComments(review);
+      }),
+    );
+  }
 }
 
-module.exports = review;
+module.exports = PrReview;
 
 
 /***/ }),

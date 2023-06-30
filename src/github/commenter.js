@@ -15,7 +15,7 @@ class Commenter {
     this.commitId = commitId;
   }
 
-  async sendReviews({ file, comments }) {
+  async sendComments({ file, comments }) {
     const chunks = chunk(comments, COMMENTS_HANDLED_AT_TIME);
     for (let i = 0; i < chunks.length; i++) {
       const comments = chunks[i];
@@ -28,7 +28,7 @@ class Commenter {
             message: comment,
           };
 
-          return this.sendReviewComment(commentData).catch(() => {
+          return this.sendComment(commentData).catch(() => {
             error(`Cannot create a comment: ${JSON.stringify(commentData)}`);
           });
         }),
@@ -36,7 +36,7 @@ class Commenter {
     }
   }
 
-  async resolveReviews() {
+  async cleanBotComments() {
     const comments = await octokit.pulls.listReviewComments({
       owner: this.repo.owner,
       repo: this.repo.name,
@@ -58,7 +58,7 @@ class Commenter {
     }
   }
 
-  async sendReviewComment(comment) {
+  async sendComment(comment) {
     info(
       `Creating new review comment for ${comment.path}:${comment.startLine}-${comment.endLine}: ${comment.message} in ${this.repo.owner}/${this.repo.name}`,
     );

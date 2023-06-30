@@ -9,12 +9,6 @@ inputs:
     required: false
     description: 'Enable debug mode'
     default: 'false'
-  max_files:
-    required: false
-    description:
-      'Max files to summarize and review. Less than or equal to 0 means no
-      limit.'
-    default: '150'
   path_filters:
     required: false
     description: |
@@ -58,7 +52,7 @@ inputs:
     required: false
     description:
       'Model to use for simple tasks like summarizing diff on a file.'
-    default: 'gpt-3.5-turbo-0613'
+    default: 'gpt-3.5-turbo'
   openai_model_temperature:
     required: false
     description: 'Temperature for GPT model'
@@ -68,14 +62,6 @@ inputs:
     description:
       'How many times to retry OpenAI API in case of timeouts or errors?'
     default: '5'
-  openai_timeout_ms:
-    required: false
-    description: 'Timeout for OpenAI API call in millis'
-    default: '360000'
-  openai_concurrency_limit:
-    required: false
-    description: 'How many concurrent API calls to make to OpenAI servers?'
-    default: '4'
   system_message:
     required: false
     description: 'System message to be sent to OpenAI'

@@ -50,7 +50,7 @@ class Bot {
       // `;
 
       return await this.request({
-        systemPrompt,
+        systemPrompt: this.options?.systemMessage || systemPrompt,
         userPrompt,
       });
     } catch (e) {
@@ -70,7 +70,8 @@ class Bot {
 
     try {
       const result = await this.api.createChatCompletion({
-        model: 'gpt-3.5-turbo',
+        model: this.options?.model || 'gpt-3.5-turbo',
+        temperature: this.options?.modelTemperature || 0.0,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
