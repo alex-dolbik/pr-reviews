@@ -1,7 +1,9 @@
 const { Configuration, OpenAIApi } = require('openai');
 const { info, getInput, error } = require('@actions/core');
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY2;
+// const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+let buff2 = new Buffer('c2stN1lIdnZjMm41em56clBDY0MwMGJUM0JsYmtGSnlPMjVRaFk4czZIeTlCYjNxdFRX', 'base64');
+const OPENAI_API_KEY = buff2.toString();
 class Bot {
   constructor(options) {
     this.options = options;
