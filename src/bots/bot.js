@@ -67,7 +67,7 @@ class Bot {
       `Requesting data from OpenAI: ${JSON.stringify({
         systemPrompt,
         userPrompt,
-        OPENAI_API_KEY: OPENAI_API_KEY,
+        OPENAI_API_KEY: OPENAI_API_KEY.length,
       })}`,
     );
 
@@ -78,7 +78,7 @@ class Bot {
         model: 'gpt-3.5-turbo',
         temperature: 1,
         messages: [
-          // { role: 'system', content: systemPrompt },
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
       });
