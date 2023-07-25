@@ -25133,39 +25133,20 @@ class Bot {
       `Requesting data from OpenAI: ${JSON.stringify({
         systemPrompt,
         userPrompt,
-        OPENAI_API_KEY: OPENAI_API_KEY.length,
+        OPENAI_API_KEY: OPENAI_API_KEY,
       })}`,
     );
 
     try {
       const result = await this.api.createChatCompletion({
         // model: this.options?.model || 'gpt-3.5-turbo',
-        model: 'gpt-3.5',
-        temperature: this.options?.modelTemperature || 0.0,
+        // temperature: this.options?.modelTemperature || 0.0,
+        model: 'gpt-3.5-turbo',
+        temperature: 1,
         messages: [
-          { role: 'system', content: systemPrompt },
+          // { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
         ],
-        // functions: [
-        //   {
-        //     name: 'comment_on_file',
-        //     description: 'Please comment on the line of code',
-        //     parameters: {
-        //       type: 'object',
-        //       properties: {
-        //         file: {
-        //           type: 'string',
-        //           description: 'full path to filename',
-        //         },
-        //         comments: {
-        //           type: 'string',
-        //           description: 'json containing objects with <line>, <comment>, <suggestion>',
-        //         },
-        //       },
-        //     },
-        //     required: ['file', 'comments'],
-        //   },
-        // ],
       });
 
       console.log(result.data.choices);
