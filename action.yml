@@ -21,6 +21,7 @@ inputs:
       !.changeset/**
       !.github/**
       !dist/**
+      !**/*.md
       !**/*.pb.go
       !**/*.lock
       !**/*.yaml
