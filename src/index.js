@@ -12,8 +12,6 @@ const run = async () => {
   // )
 
   const prLabels = githubContext.payload.pull_request.labels;
-  console.log({ prLabels });
-  console.log(githubContext.payload.pull_request);
   const reviewLabel = REVIEW_LABEL;
   const reviewLabelExists = prLabels.some((label) => label.name === reviewLabel);
 

@@ -103,6 +103,14 @@ class Bot {
       return result.data.choices;
     } catch (e) {
       error(`Failed to get OpenAI response: ${e.message}`);
+      console.log('Request options: ', {
+        model: this.options?.model || 'gpt-3.5-turbo',
+        temperature: this.options?.modelTemperature || 0.0,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+      });
 
       return null;
     }
