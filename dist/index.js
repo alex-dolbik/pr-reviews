@@ -25140,8 +25140,8 @@ class Bot {
     try {
       const result = await this.api.createChatCompletion({
         model: this.options?.model || 'gpt-3.5-turbo',
-        // temperature: this.options?.modelTemperature || 0.0,
-        temperature: 1,
+        temperature: this.options?.modelTemperature || 0.0,
+        // temperature: 1,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -25155,7 +25155,7 @@ class Bot {
       error(`Failed to get OpenAI response: ${e.message}`);
       console.log('Request options: ', {
         model: this.options?.model || 'gpt-3.5-turbo',
-        temperature: 0.5,
+        temperature: this.options?.modelTemperature || 0.0,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
