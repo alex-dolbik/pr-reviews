@@ -1,9 +1,8 @@
 const { Configuration, OpenAIApi } = require('openai');
 const { info, getInput, error } = require('@actions/core');
 
-// const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-let buff2 = new Buffer('c2stN1lIdnZjMm41em56clBDY0MwMGJUM0JsYmtGSnlPMjVRaFk4czZIeTlCYjNxdFRX', 'base64');
-const OPENAI_API_KEY = buff2.toString();
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+
 class Bot {
   constructor(options) {
     this.options = options;
@@ -20,8 +19,6 @@ class Bot {
   }
 
   async sendMessage({ userPrompt }) {
-    // info(`Bot send message: ${userPrompt}`);
-
     try {
       const systemPrompt = `
       You are \`@openai\` (aka \`github-actions[bot]\`), a language model 
@@ -53,7 +50,6 @@ class Bot {
 
       return await this.request({
         systemPrompt: this.options?.systemMessage || systemPrompt,
-        // systemPrompt,
         userPrompt,
       });
     } catch (e) {
@@ -87,14 +83,6 @@ class Bot {
       return result.data.choices;
     } catch (e) {
       error(`Failed to get OpenAI response: ${e.message}`);
-      console.log('Request options: ', {
-        model: this.options?.model || 'gpt-3.5-turbo',
-        temperature: this.options?.modelTemperature || 0.2,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-      });
 
       return null;
     }
