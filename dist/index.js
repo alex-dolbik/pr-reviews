@@ -25067,7 +25067,7 @@ function wrappy (fn, cb) {
 const { Configuration, OpenAIApi } = __nccwpck_require__(9211);
 const { info, getInput, error } = __nccwpck_require__(2186);
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY2;
 class Bot {
   constructor(options) {
     this.options = options;

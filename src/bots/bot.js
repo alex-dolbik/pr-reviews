@@ -1,7 +1,7 @@
 const { Configuration, OpenAIApi } = require('openai');
 const { info, getInput, error } = require('@actions/core');
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY2;
 class Bot {
   constructor(options) {
     this.options = options;
