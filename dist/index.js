@@ -25326,11 +25326,22 @@ const { context: githubContext } = __nccwpck_require__(5438);
 
 const PrReview = __nccwpck_require__(837);
 
+const REVIEW_LABEL = 'ai-review';
+
 const run = async () => {
   // run file review
   // info(
   //   `githubContext ${JSON.stringify(githubContext)}`
   // )
+
+  const prLabels = githubContext.payload.pull_request.labels;
+  const reviewLabel = REVIEW_LABEL;
+  const reviewLabelExists = prLabels.some((label) => label.name === reviewLabel);
+
+  if (!reviewLabelExists) {
+    warning(`Skipped: Review label "${reviewLabel}" is not added`);
+    return;
+  }
 
   if (['pull_request', 'pull_request_target'].includes(githubContext.eventName)) {
     const reviewer = new PrReview(githubContext);
