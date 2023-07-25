@@ -75,7 +75,7 @@ class Bot {
       const result = await this.api.createChatCompletion({
         model: this.options?.model || 'gpt-3.5-turbo',
         // temperature: this.options?.modelTemperature || 0.2,
-        temperature: 0.9,
+        temperature: 0.7,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },

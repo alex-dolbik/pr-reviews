@@ -46,7 +46,8 @@ class Commenter {
     const userToResolve = 'github-actions'; // Replace with the username you want to resolve comments from
 
     for (const comment of comments.data) {
-      if (comment.user.login === userToResolve) {
+      console.log('Comment from ', comment.user.login);
+      if (comment.user?.login === userToResolve) {
         await octokit.pulls.deleteReviewComment({
           owner: this.repo.owner,
           repo: this.repo.name,

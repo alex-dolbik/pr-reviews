@@ -25119,6 +25119,7 @@ class Bot {
 
       return await this.request({
         systemPrompt: this.options?.systemMessage || systemPrompt,
+        // systemPrompt,
         userPrompt,
       });
     } catch (e) {
@@ -25140,7 +25141,7 @@ class Bot {
       const result = await this.api.createChatCompletion({
         model: this.options?.model || 'gpt-3.5-turbo',
         // temperature: this.options?.modelTemperature || 0.2,
-        temperature: 0.9,
+        temperature: 0.7,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt },
@@ -25222,7 +25223,8 @@ class Commenter {
     const userToResolve = 'github-actions'; // Replace with the username you want to resolve comments from
 
     for (const comment of comments.data) {
-      if (comment.user.login === userToResolve) {
+      console.log('Comment from ', comment.user.login);
+      if (comment.user?.login === userToResolve) {
         await octokit.pulls.deleteReviewComment({
           owner: this.repo.owner,
           repo: this.repo.name,
