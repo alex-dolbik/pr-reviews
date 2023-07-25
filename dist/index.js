@@ -25118,7 +25118,8 @@ class Bot {
       // `;
 
       return await this.request({
-        systemPrompt: this.options?.systemMessage || systemPrompt,
+        // systemPrompt: this.options?.systemMessage || systemPrompt,
+        systemPrompt,
         userPrompt,
       });
     } catch (e) {
@@ -25617,7 +25618,7 @@ class PrReview {
       return isFileTypeAccepted;
     });
 
-    await this.commenter.cleanBotComments();
+    // await this.commenter.cleanBotComments();
 
     await Promise.all(
       filteredFiles.map(async (file) => {

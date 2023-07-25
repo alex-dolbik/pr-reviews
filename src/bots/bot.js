@@ -52,7 +52,8 @@ class Bot {
       // `;
 
       return await this.request({
-        systemPrompt: this.options?.systemMessage || systemPrompt,
+        // systemPrompt: this.options?.systemMessage || systemPrompt,
+        systemPrompt,
         userPrompt,
       });
     } catch (e) {
