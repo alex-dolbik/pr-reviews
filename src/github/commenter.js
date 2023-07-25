@@ -47,12 +47,12 @@ class Commenter {
 
     for (const comment of comments.data) {
       // if (comment.user.login === userToResolve) {
-      await octokit.pulls.updateReviewComment({
+      await octokit.pulls.deleteReviewComment({
         owner: this.repo.owner,
         repo: this.repo.name,
         comment_id: comment.id,
-        body: comment.body,
-        event: 'RESOLVE',
+        // body: comment.body,
+        // event: 'RESOLVE',
       });
       // }
     }

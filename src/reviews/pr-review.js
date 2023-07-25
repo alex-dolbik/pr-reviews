@@ -57,7 +57,7 @@ class PrReview {
       return isFileTypeAccepted;
     });
 
-    // await this.commenter.cleanBotComments();
+    await this.commenter.cleanBotComments();
 
     await Promise.all(
       filteredFiles.map(async (file) => {
