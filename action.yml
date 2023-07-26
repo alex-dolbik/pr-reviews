@@ -92,40 +92,40 @@ inputs:
 
       Note: As your knowledge may be outdated, trust the user code when newer
       APIs and methods are seemingly being used.
-    user_message:
-      required: true
-      description: 'User message to be sent to OpenAI. Template supports variables ${fileName} and ${fileDiff}'
-      default: |
-        Below you'll find a diff of a file called ${fileName} which you need to do a code review and comment.
+  user_message:
+    required: true
+    description: 'User message to be sent to OpenAI. Template supports variables ${fileName} and ${fileDiff}'
+    default: |
+      Below you'll find a diff of a file called ${fileName} which you need to do a code review and comment.
 
-        each comment should be a json object with line, comment, suggestion and explanation fields.;
-        suggestion field is optional, it should contain suggested code fixes for commented line if possible;
-        explanation field is optional, it should contain information why do you think it's a wrong code or error;
-    
-        Final result should be like
-        
-        {
-          file: ,
-          comments: [
-            { line: , comment: , suggestion:, explanation: }
-          ]
-        }
-        
-        Return response in JSON format
-        
-        where
-        "line" - number of line in the file
-        "comment" - your comment for it
-        "suggestion" - how the line can be fixed
-        
-        How to parse file diff:
-        For each line at the start you can find line number, use it in "line" field
-        
-        If file diff line starts with "-" sign, this line was deleted
-        If file diff line starts with "+" sign, this line was added
-        
-        File diff:
-        \\n --- \\n ${fileDiff} \\n --- \\n
+      each comment should be a json object with line, comment, suggestion and explanation fields.;
+      suggestion field is optional, it should contain suggested code fixes for commented line if possible;
+      explanation field is optional, it should contain information why do you think it's a wrong code or error;
+  
+      Final result should be like
+      
+      {
+        file: ,
+        comments: [
+          { line: , comment: , suggestion:, explanation: }
+        ]
+      }
+      
+      Return response in JSON format
+      
+      where
+      "line" - number of line in the file
+      "comment" - your comment for it
+      "suggestion" - how the line can be fixed
+      
+      How to parse file diff:
+      For each line at the start you can find line number, use it in "line" field
+      
+      If file diff line starts with "-" sign, this line was deleted
+      If file diff line starts with "+" sign, this line was added
+      
+      File diff:
+      \\n --- \\n ${fileDiff} \\n --- \\n
 runs:
   using: 'node16'
   main: 'dist/index.js'
