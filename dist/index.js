@@ -25191,8 +25191,9 @@ class Commenter {
             startLine: line,
             endLine: line,
             message: `${comment}
-  ${suggestion && `Suggestion: ${suggestion}`}
-  ${explanation && `Explanation: ${explanation}`}`,
+
+  ${suggestion ? `**Suggestion**: ${suggestion}` : ''}
+  ${explanation ? `**Explanation**: ${explanation}` : ''}`,
           };
 
           return this.sendComment(commentData).catch(() => {
