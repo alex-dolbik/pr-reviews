@@ -18,11 +18,12 @@ const parseDiff = (patch) => {
   }
 
   for (const line of lines) {
+    const lineSign = line.substring(1, 0);
     if (line.startsWith('-')) {
       oldHunkLines.push(`${line.substring(1)}`);
       // old_line++
     } else if (line.startsWith('+')) {
-      newHunkLines.push(`${newLine}: ${line.substring(1)}`);
+      newHunkLines.push(`${newLine}: ${lineSign}${line.substring(1)}`);
       newLine++;
     } else {
       oldHunkLines.push(`${line}`);

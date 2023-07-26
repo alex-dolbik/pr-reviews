@@ -25185,12 +25185,14 @@ class Commenter {
     for (let i = 0; i < chunks.length; i++) {
       const comments = chunks[i];
       await Promise.allSettled(
-        comments.map(({ line, comment }) => {
+        comments.map(({ line, comment, suggestion, explanation }) => {
           const commentData = {
             path: file,
             startLine: line,
             endLine: line,
-            message: comment,
+            message: `${comment}
+  ${suggestion && `Suggestion: ${suggestion}`}
+  ${explanation && `Explanation: ${explanation}`}`,
           };
 
           return this.sendComment(commentData).catch(() => {
@@ -25627,11 +25629,12 @@ const parseDiff = (patch) => {
   }
 
   for (const line of lines) {
+    const lineSign = line.substring(1, 0);
     if (line.startsWith('-')) {
       oldHunkLines.push(`${line.substring(1)}`);
       // old_line++
     } else if (line.startsWith('+')) {
-      newHunkLines.push(`${newLine}: ${line.substring(1)}`);
+      newHunkLines.push(`${newLine}: ${lineSign}${line.substring(1)}`);
       newLine++;
     } else {
       oldHunkLines.push(`${line}`);

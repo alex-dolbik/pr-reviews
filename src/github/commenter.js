@@ -20,12 +20,14 @@ class Commenter {
     for (let i = 0; i < chunks.length; i++) {
       const comments = chunks[i];
       await Promise.allSettled(
-        comments.map(({ line, comment }) => {
+        comments.map(({ line, comment, suggestion, explanation }) => {
           const commentData = {
             path: file,
             startLine: line,
             endLine: line,
-            message: comment,
+            message: `${comment}
+  ${suggestion && `Suggestion: ${suggestion}`}
+  ${explanation && `Explanation: ${explanation}`}`,
           };
 
           return this.sendComment(commentData).catch(() => {
