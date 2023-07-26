@@ -1,10 +1,12 @@
 const { Configuration, OpenAIApi } = require('openai');
-const { info, getInput, error } = require('@actions/core');
+const { info, getInput, error, getBooleanInput } = require('@actions/core');
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 class Bot {
   constructor(options) {
+    this.debug = getBooleanInput('debug');
+
     this.options = options;
     if (OPENAI_API_KEY) {
       const configuration = new Configuration({
@@ -78,7 +80,9 @@ class Bot {
         ],
       });
 
-      console.log(result.data.choices);
+      if (this.debug) {
+        console.log(result.data.choices);
+      }
 
       return result.data.choices;
     } catch (e) {

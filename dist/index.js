@@ -25065,12 +25065,14 @@ function wrappy (fn, cb) {
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const { Configuration, OpenAIApi } = __nccwpck_require__(9211);
-const { info, getInput, error } = __nccwpck_require__(2186);
+const { info, getInput, error, getBooleanInput } = __nccwpck_require__(2186);
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 class Bot {
   constructor(options) {
+    this.debug = getBooleanInput('debug');
+
     this.options = options;
     if (OPENAI_API_KEY) {
       const configuration = new Configuration({
@@ -25144,7 +25146,9 @@ class Bot {
         ],
       });
 
-      console.log(result.data.choices);
+      if (this.debug) {
+        console.log(result.data.choices);
+      }
 
       return result.data.choices;
     } catch (e) {
@@ -25472,24 +25476,25 @@ module.exports = PathFilter;
 /***/ 6855:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { info, error } = __nccwpck_require__(2186);
+const { info, error, getBooleanInput } = __nccwpck_require__(2186);
 
 const generateFileReviewPrompt = __nccwpck_require__(7399);
 
 class FileReview {
   constructor({ bot }) {
+    this.debug = getBooleanInput('debug');
     this.bot = bot;
   }
 
   async review({ fileDiff }) {
     const fileReviewPrompt = generateFileReviewPrompt(fileDiff);
 
-    info(`Request file review: ${fileReviewPrompt}`);
-
     try {
       const response = await this.bot.sendMessage({ userPrompt: fileReviewPrompt });
       // console.log(response[0].message?.content);
-      info(`Got file review response: ${JSON.stringify(response)}`);
+      if (this.debug) {
+        info(`Got file review response: ${JSON.stringify(response)}`);
+      }
       if (response?.length) {
         return this.parseResponse(response[0]);
       }
@@ -25515,7 +25520,7 @@ module.exports = FileReview;
 /***/ 837:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { warning, info, error, getMultilineInput, getInput } = __nccwpck_require__(2186);
+const { warning, info, error, getMultilineInput, getInput, getBooleanInput } = __nccwpck_require__(2186);
 
 const octokit = __nccwpck_require__(1823);
 const Bot = __nccwpck_require__(5041);
@@ -25530,6 +25535,7 @@ class PrReview {
       warning('Skipped: context.payload.pull_request is null');
       return;
     }
+    this.debug = getBooleanInput('debug');
 
     const pathFilters = getMultilineInput('path_filters');
     const repo = context.payload.repository;
@@ -25580,7 +25586,9 @@ class PrReview {
       filteredFiles.map(async (file) => {
         try {
           const hunkInfo = parseDiff(file.patch);
-          console.log('hunkInfo', hunkInfo, file.patch);
+          if (this.debug) {
+            console.log('hunkInfo', file.patch, hunkInfo);
+          }
 
           const review = await this.fileReview.review({
             fileDiff: {

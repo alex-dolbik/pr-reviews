@@ -1,4 +1,4 @@
-const { warning, info, error, getMultilineInput, getInput } = require('@actions/core');
+const { warning, info, error, getMultilineInput, getInput, getBooleanInput } = require('@actions/core');
 
 const octokit = require('../github/octokit');
 const Bot = require('../bots/bot');
@@ -13,6 +13,7 @@ class PrReview {
       warning('Skipped: context.payload.pull_request is null');
       return;
     }
+    this.debug = getBooleanInput('debug');
 
     const pathFilters = getMultilineInput('path_filters');
     const repo = context.payload.repository;
@@ -63,7 +64,9 @@ class PrReview {
       filteredFiles.map(async (file) => {
         try {
           const hunkInfo = parseDiff(file.patch);
-          console.log('hunkInfo', hunkInfo, file.patch);
+          if (this.debug) {
+            console.log('hunkInfo', file.patch, hunkInfo);
+          }
 
           const review = await this.fileReview.review({
             fileDiff: {
