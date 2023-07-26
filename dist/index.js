@@ -25127,18 +25127,20 @@ class Bot {
   }
 
   async request({ systemPrompt, userPrompt }) {
-    info(
-      `Requesting data from OpenAI: ${JSON.stringify({
-        systemPrompt,
-        userPrompt,
-        OPENAI_API_KEY: OPENAI_API_KEY.length,
-      })}`,
-    );
+    const temperature = this.options?.modelTemperature ? Number(this.options?.modelTemperature) : 0.2;
+    const model = this.options?.model || 'gpt-3.5-turbo';
+
+    console.log(`Requesting data from OpenAI`, {
+      systemPrompt,
+      userPrompt,
+      OPENAI_API_KEY: OPENAI_API_KEY.length,
+      temperature,
+      model,
+    });
 
     try {
-      const temperature = this.options?.modelTemperature ? Number(this.options?.modelTemperature) : 0.2;
       const result = await this.api.createChatCompletion({
-        model: this.options?.model || 'gpt-3.5-turbo',
+        model,
         temperature,
         messages: [
           { role: 'system', content: systemPrompt },
