@@ -61,23 +61,29 @@ class PrReview {
 
     await Promise.all(
       filteredFiles.map(async (file) => {
-        const hunkInfo = parseDiff(file.patch);
-        console.log('hunkInfo', hunkInfo, file.patch);
+        try {
+          const hunkInfo = parseDiff(file.patch);
+          console.log('hunkInfo', hunkInfo, file.patch);
 
-        const review = await this.fileReview.review({
-          fileDiff: {
-            fileName: file.filename,
-            diff: hunkInfo.newHunk, // file.patch,
-          },
-        });
-        console.log('Review result:', review);
+          const review = await this.fileReview.review({
+            fileDiff: {
+              fileName: file.filename,
+              diff: hunkInfo.newHunk, // file.patch,
+            },
+          });
+          console.log('Review result:', review);
 
-        if (!review) {
-          error(`Cannot get file review`);
-          return;
+          if (!review) {
+            error(`Cannot get file review`);
+            return;
+          }
+
+          await this.commenter.sendComments(review);
+        } catch (e) {
+          error(`Cannot review file: ${file.filename}`);
+          error(`Error: ${e.message}`);
+          console.error(e);
         }
-
-        await this.commenter.sendComments(review);
       }),
     );
   }
