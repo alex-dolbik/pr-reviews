@@ -48,7 +48,7 @@ const FILE_NAME_PLACEHOLDER = '${fileName}';
 const FILE_DIFF_PLACEHOLDER = '${fileDiff}';
 
 const generateFileReviewPrompt = (fileDiff) => {
-  const userMessage = getInput('system_message');
+  const userMessage = getInput('user_message');
 
   return userMessage
     .replaceAll(FILE_NAME_PLACEHOLDER, fileDiff.fileName)
