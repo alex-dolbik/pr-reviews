@@ -3,7 +3,7 @@ const chunk = require('lodash/chunk');
 
 const octokit = require('./octokit');
 
-const COMMENTS_HANDLED_AT_TIME = 5;
+const COMMENTS_HANDLED_AT_TIME = 2;
 
 class Commenter {
   constructor({ ownerName, repoName, prNumber, commitId }) {

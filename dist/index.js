@@ -25168,7 +25168,7 @@ const chunk = __nccwpck_require__(9908);
 
 const octokit = __nccwpck_require__(1823);
 
-const COMMENTS_HANDLED_AT_TIME = 5;
+const COMMENTS_HANDLED_AT_TIME = 2;
 
 class Commenter {
   constructor({ ownerName, repoName, prNumber, commitId }) {
