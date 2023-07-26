@@ -25538,6 +25538,7 @@ class PrReview {
       return;
     }
     this.debug = getBooleanInput('debug');
+    this.enableComment = getBooleanInput('enable_comment');
 
     const pathFilters = getMultilineInput('path_filters');
     const repo = context.payload.repository;
@@ -25605,7 +25606,9 @@ class PrReview {
             return;
           }
 
-          await this.commenter.sendComments(review);
+          if (this.enableComment) {
+            await this.commenter.sendComments(review);
+          }
         } catch (e) {
           error(`Cannot review file: ${file.filename}`);
           error(`Error: ${e.message}`);

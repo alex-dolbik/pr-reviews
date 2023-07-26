@@ -5,6 +5,10 @@ branding:
   color: 'orange'
 author: 'Alex D.'
 inputs:
+  enable_comment:
+    required: false
+    description: 'Enable adding review comments'
+    default: 'true'
   debug:
     required: false
     description: 'Enable debug mode'
