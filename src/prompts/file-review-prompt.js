@@ -42,37 +42,17 @@
 // If file diff line starts with "-" sign, this line was deleted
 // If file diff line starts with "+" sign, this line was added
 
-const generateFileReviewPrompt = (fileDiff) => `
-    Below you'll find a diff of a file called ${fileDiff.fileName} which you need to do a code review and comment.
+const { getInput } = require('@actions/core');
 
-    each comment should be a json object with line, comment, suggestion and explanation fields.;
-    suggestion field is optional, it should contain suggested code fixes for commented line if possible;
-    explanation field is optional, it should contain information why do you think it's a wrong code or error;
+const FILE_NAME_PLACEHOLDER = '${fileName}';
+const FILE_DIFF_PLACEHOLDER = '${fileDiff}';
 
-    Final result should be like
-    
-    {
-      file: ,
-      comments: [
-        { line: , comment: , suggestion:, explanation: }
-      ]
-    }
-    
-    Return response in JSON format 
-    
-    where
-    "line" - number of line in the file
-    "comment" - your comment for it
-    "suggestion" - how the line can be fixed
-    
-    How to parse file diff:
-    For each line at the start you can find line number, use it in "line" field
-    
-    If file diff line starts with "-" sign, this line was deleted
-    If file diff line starts with "+" sign, this line was added
-    
-    File diff:
-   \\n --- \\n ${fileDiff.diff} \\n --- \\n
-`;
+const generateFileReviewPrompt = (fileDiff) => {
+  const userMessage = getInput('system_message');
+
+  return userMessage
+    .replaceAll(FILE_NAME_PLACEHOLDER, fileDiff.fileName)
+    .replaceAll(FILE_DIFF_PLACEHOLDER, fileDiff.diff);
+};
 
 module.exports = generateFileReviewPrompt;
