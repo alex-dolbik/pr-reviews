@@ -48,16 +48,20 @@ class Commenter {
 
     const userToResolve = 'github-actions[bot]'; // Replace with the username you want to resolve comments from
 
-    for (const comment of comments.data) {
-      if (comment.user?.login === userToResolve) {
-        await octokit.pulls.deleteReviewComment({
-          owner: this.repo.owner,
-          repo: this.repo.name,
-          comment_id: comment.id,
-          // body: comment.body,
-          // event: 'RESOLVE',
-        });
-      }
+    const commentsData = comments.data?.filter((comment) => comment.user?.login === userToResolve);
+    info(`Deleting bot comments: ${commentsData?.length} comments`);
+    const chunks = chunk(commentsData, COMMENTS_HANDLED_AT_TIME);
+    for (let i = 0; i < chunks.length; i++) {
+      const comments = chunks[i];
+      await Promise.allSettled(
+        comments.map((comment) => {
+          return octokit.pulls.deleteReviewComment({
+            owner: this.repo.owner,
+            repo: this.repo.name,
+            comment_id: comment.id,
+          });
+        }),
+      );
     }
   }
 
