@@ -9,10 +9,11 @@ class FileReview {
   }
 
   async review({ fileDiff }) {
-    const fileReviewPrompt = generateFileReviewPrompt(fileDiff);
-
     try {
-      const response = await this.bot.sendMessage({ userPrompt: fileReviewPrompt });
+      // const fileReviewPrompt = generateFileReviewPrompt(fileDiff);
+      // const response = await this.bot.sendMessage({ userPrompt: fileReviewPrompt });
+
+      const response = await this.bot.sendMessage({ fileDiff: fileDiff.diff, fileName: fileDiff.fileName });
       // console.log(response[0].message?.content);
       if (this.debug) {
         info(`Got file review response: ${JSON.stringify(response)}`);

@@ -5,6 +5,10 @@ branding:
   color: 'orange'
 author: 'Alex D.'
 inputs:
+  chat_gpt_infra_endpoint:
+    required: false
+    description: 'Chat GPT infra endpoint'
+    default: 'https://chat-gpt-production.naturalint.com/gitaction_pr_feedback?enable_config=true'
   enable_comment:
     required: false
     description: 'Enable adding review comments'

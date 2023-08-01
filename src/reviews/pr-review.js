@@ -2,6 +2,7 @@ const { warning, info, error, getMultilineInput, getInput, getBooleanInput } = r
 
 const octokit = require('../github/octokit');
 const Bot = require('../bots/bot');
+const NiBot = require('../bots/ni-bot');
 const FileReview = require('./file-review');
 const Commenter = require('../github/commenter');
 const { parseDiff } = require('../utils/file-diff');
@@ -23,12 +24,19 @@ class PrReview {
     this.prNumber = context.payload.pull_request.number;
     this.commitId = context.payload.pull_request.head.sha;
 
-    const bot = new Bot({
+    // const bot = new Bot({
+    //   model: getInput('openai_model'),
+    //   modelTemperature: getInput('openai_model_temperature'),
+    //   systemMessage: getInput('system_message'),
+    // });
+    const niBot = new NiBot({
       model: getInput('openai_model'),
       modelTemperature: getInput('openai_model_temperature'),
       systemMessage: getInput('system_message'),
+      userMessage: getInput('user_message'),
+      url: getInput('chat_gpt_infra_endpoint'),
     });
-    this.fileReview = new FileReview({ bot });
+    this.fileReview = new FileReview({ bot: niBot });
     this.commenter = new Commenter({
       ownerName: this.ownerName,
       repoName: this.repoName,
