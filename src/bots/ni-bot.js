@@ -1,7 +1,5 @@
 const { error, getBooleanInput } = require('@actions/core');
-// const fetch = require('node-fetch');
-
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const axios = require('axios');
 
 class NiBot {
   constructor(options) {
@@ -34,7 +32,6 @@ class NiBot {
 
   async request(payload) {
     const url = this.options.url;
-    const requestDataJSON = JSON.stringify(payload);
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -42,17 +39,10 @@ class NiBot {
       console.log({ payload });
     }
 
-    return fetch(url, {
-      method: 'POST',
-      headers,
-      body: requestDataJSON,
-    })
+    return axios
+      .post(url, payload, { headers })
       .then((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error(`Request failed with status: ${response.status}`);
-        }
+        return response.data;
       })
       .then((data) => {
         if (this.debug) {
