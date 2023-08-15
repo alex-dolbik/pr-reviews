@@ -12,7 +12,13 @@ class NiBot {
     }
 
     console.log('Chat GPT IA CONF');
-    console.log('AAAAATETETDSGFDSG' + this.options.urlAuthCredentials + 'WETOIJEIOSDFJGNJKSGHSDSG');
+    console.log('AAAAATETETDSGFDSG' + process.env.CHAT_GPT_BASIC_AUTH + 'WETOIJEIOSDFJGNJKSGHSDSG');
+    console.log(
+      'AAAAATETETDSGFDSG' +
+        this.options.urlAuthCredentials.username +
+        this.options.urlAuthCredentials.password +
+        'WETOIJEIOSDFJGNJKSGHSDSG',
+    );
   }
 
   async sendMessage({ fileDiff, fileName }) {
