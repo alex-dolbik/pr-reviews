@@ -8,6 +8,8 @@ const Commenter = require('../github/commenter');
 const { parseDiff } = require('../utils/file-diff');
 const FilterPath = require('./file-filter');
 
+const CHAT_GPT_BASIC_AUTH = process.env.CHAT_GPT_BASIC_AUTH;
+
 class PrReview {
   constructor(context) {
     if (context.payload.pull_request == null) {
@@ -29,7 +31,8 @@ class PrReview {
     //   modelTemperature: getInput('openai_model_temperature'),
     //   systemMessage: getInput('system_message'),
     // });
-    const authCredentialsStr = getInput('chat_gpt_infra_basic_auth_creds');
+
+    const authCredentialsStr = CHAT_GPT_BASIC_AUTH;
     const [authUserName, authUserPassword] = authCredentialsStr.split(':');
     const niBot = new NiBot({
       model: getInput('openai_model'),

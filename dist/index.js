@@ -27093,6 +27093,11 @@ class NiBot {
   constructor(options) {
     this.options = options;
     this.debug = getBooleanInput('debug');
+
+    if (!this.options.urlAuthCredentials) {
+      console.error('Chat GPT infra basic auth is not configured');
+      throw new Error('Chat GPT infra basic auth is not configured');
+    }
   }
 
   async sendMessage({ fileDiff, fileName }) {
@@ -27119,7 +27124,7 @@ class NiBot {
   }
 
   async request(payload) {
-    const url = this.options.url;
+    const { url, urlAuthCredentials } = this.options;
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -27128,7 +27133,10 @@ class NiBot {
     }
 
     return axios
-      .post(url, payload, { headers })
+      .post(url, payload, {
+        headers,
+        auth: urlAuthCredentials,
+      })
       .then((response) => {
         return response.data;
       })
@@ -27518,6 +27526,8 @@ const Commenter = __nccwpck_require__(1762);
 const { parseDiff } = __nccwpck_require__(2586);
 const FilterPath = __nccwpck_require__(4792);
 
+const CHAT_GPT_BASIC_AUTH = process.env.CHAT_GPT_BASIC_AUTH;
+
 class PrReview {
   constructor(context) {
     if (context.payload.pull_request == null) {
@@ -27539,12 +27549,19 @@ class PrReview {
     //   modelTemperature: getInput('openai_model_temperature'),
     //   systemMessage: getInput('system_message'),
     // });
+
+    const authCredentialsStr = CHAT_GPT_BASIC_AUTH;
+    const [authUserName, authUserPassword] = authCredentialsStr.split(':');
     const niBot = new NiBot({
       model: getInput('openai_model'),
       modelTemperature: getInput('openai_model_temperature'),
       systemMessage: getInput('system_message'),
       userMessage: getInput('user_message'),
       url: getInput('chat_gpt_infra_endpoint'),
+      urlAuthCredentials: {
+        username: authUserName,
+        password: authUserPassword,
+      },
     });
     this.fileReview = new FileReview({ bot: niBot });
     this.commenter = new Commenter({

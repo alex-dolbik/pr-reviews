@@ -5,6 +5,11 @@ class NiBot {
   constructor(options) {
     this.options = options;
     this.debug = getBooleanInput('debug');
+
+    if (!this.options.urlAuthCredentials) {
+      console.error('Chat GPT infra basic auth is not configured');
+      throw new Error('Chat GPT infra basic auth is not configured');
+    }
   }
 
   async sendMessage({ fileDiff, fileName }) {
