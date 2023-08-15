@@ -29,12 +29,18 @@ class PrReview {
     //   modelTemperature: getInput('openai_model_temperature'),
     //   systemMessage: getInput('system_message'),
     // });
+    const authCredentialsStr = getInput('chat_gpt_infra_basic_auth_creds');
+    const [authUserName, authUserPassword] = authCredentialsStr.split(':');
     const niBot = new NiBot({
       model: getInput('openai_model'),
       modelTemperature: getInput('openai_model_temperature'),
       systemMessage: getInput('system_message'),
       userMessage: getInput('user_message'),
       url: getInput('chat_gpt_infra_endpoint'),
+      urlAuthCredentials: {
+        username: authUserName,
+        password: authUserPassword,
+      },
     });
     this.fileReview = new FileReview({ bot: niBot });
     this.commenter = new Commenter({

@@ -5,6 +5,10 @@ branding:
   color: 'orange'
 author: 'Alex D.'
 inputs:
+  chat_gpt_infra_basic_auth_creds:
+    required: false
+    description: 'Chat GPT infra basic auth creds'
+    default: ''
   chat_gpt_infra_endpoint:
     required: false
     description: 'Chat GPT infra endpoint'

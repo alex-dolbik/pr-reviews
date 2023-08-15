@@ -31,7 +31,7 @@ class NiBot {
   }
 
   async request(payload) {
-    const url = this.options.url;
+    const { url, urlAuthCredentials } = this.options;
     const headers = {
       'Content-Type': 'application/json',
     };
@@ -40,7 +40,10 @@ class NiBot {
     }
 
     return axios
-      .post(url, payload, { headers })
+      .post(url, payload, {
+        headers,
+        auth: urlAuthCredentials,
+      })
       .then((response) => {
         return response.data;
       })
